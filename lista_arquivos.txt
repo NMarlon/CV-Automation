@@ -1,0 +1,497 @@
+Relatório de estrutura: C:\MarlonScripts\CV-Automation
+==================================================
+
+
+[DIRETÓRIO] .
+  ├── .gitignore
+  ├── AGENTS.md
+  ├── Compactação ALL-in-ONE.py
+  ├── configuracoes.py
+  ├── Consolidado-CV-Auto.md
+  ├── estatisticas.py
+  ├── integracao.json
+  ├── interface_humana.py
+  ├── ListaDeDomíniosAtivos.json
+  ├── ListaDeExecucao.json
+  ├── Listagem-de-Arquivos.py
+  ├── log.log
+  ├── log_estatisticas.csv
+  ├── main.py
+  ├── readme.md
+  ├── respostas.json
+
+[DIRETÓRIO] .\CV-Data
+
+[DIRETÓRIO] .\CV-Data\CVs
+
+[DIRETÓRIO] .\Para os Devs
+  ├── Pontos importantes.md
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome
+  ├── CrashpadMetrics-active.pma
+  ├── first_party_sets.db
+  ├── first_party_sets.db-journal
+  ├── Last Browser
+  ├── Last Version
+  ├── Local State
+  ├── Variations
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\BrowserMetrics
+  ├── BrowserMetrics-6A0C9BD7-150.pma
+  ├── BrowserMetrics-6A0C9BE0-1CBC.pma
+  ├── BrowserMetrics-6A0C9C9D-11FC.pma
+  ├── BrowserMetrics-6A0C9CCB-2F9C.pma
+  ├── BrowserMetrics-6A0C9CD7-7780.pma
+  ├── BrowserMetrics-6A0C9D37-7D48.pma
+  ├── BrowserMetrics-6A0C9D4D-2948.pma
+  ├── BrowserMetrics-6A0C9D68-4748.pma
+  ├── BrowserMetrics-6A0C9D76-6BA8.pma
+  ├── BrowserMetrics-6A0C9D7E-4D68.pma
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\component_crx_cache
+  ├── metadata.json
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Crashpad
+  ├── metadata
+  ├── settings.dat
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Crashpad\attachments
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Crashpad\reports
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default
+  ├── Account Web Data
+  ├── Account Web Data-journal
+  ├── Affiliation Database
+  ├── Affiliation Database-journal
+  ├── BookmarkMergedSurfaceOrdering
+  ├── DIPS
+  ├── Favicons
+  ├── Favicons-journal
+  ├── heavy_ad_intervention_opt_out.db
+  ├── heavy_ad_intervention_opt_out.db-journal
+  ├── History
+  ├── History-journal
+  ├── LOCK
+  ├── LOG
+  ├── LOG.old
+  ├── Login Data
+  ├── Login Data For Account
+  ├── Login Data For Account-journal
+  ├── Login Data-journal
+  ├── MediaDeviceSalts
+  ├── MediaDeviceSalts-journal
+  ├── Network Action Predictor
+  ├── Network Action Predictor-journal
+  ├── Preferences
+  ├── PreferredApps
+  ├── README
+  ├── Secure Preferences
+  ├── ServerCertificate
+  ├── ServerCertificate-journal
+  ├── Shortcuts
+  ├── Shortcuts-journal
+  ├── Top Sites
+  ├── Top Sites-journal
+  ├── trusted_vault.pb
+  ├── Web Data
+  ├── Web Data-journal
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\AutofillAiModelCache
+  ├── LOCK
+  ├── LOG
+  ├── LOG.old
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\AutofillStrikeDatabase
+  ├── LOCK
+  ├── LOG
+  ├── LOG.old
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\blob_storage
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\blob_storage\be6dfc57-7986-4683-8d58-b21b76d972cc
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\BudgetDatabase
+  ├── LOCK
+  ├── LOG
+  ├── LOG.old
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\Cache
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\Cache\Cache_Data
+  ├── data_0
+  ├── data_1
+  ├── data_2
+  ├── data_3
+  ├── f_000001
+  ├── f_000002
+  ├── f_000003
+  ├── f_000004
+  ├── f_000005
+  ├── f_000006
+  ├── f_000007
+  ├── f_000008
+  ├── f_000009
+  ├── f_00000a
+  ├── f_00000b
+  ├── f_00000c
+  ├── f_00000d
+  ├── f_00000e
+  ├── f_00000f
+  ├── f_000010
+  ├── f_000011
+  ├── f_000012
+  ├── f_000013
+  ├── f_000014
+  ├── f_000015
+  ├── f_000016
+  ├── f_000017
+  ├── f_000018
+  ├── f_000019
+  ├── f_00001a
+  ├── f_00001b
+  ├── f_00001c
+  ├── f_00001d
+  ├── f_00001e
+  ├── f_00001f
+  ├── f_000020
+  ├── f_000021
+  ├── f_000022
+  ├── f_000023
+  ├── f_000024
+  ├── f_000025
+  ├── index
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\Cache\No_Vary_Search
+  ├── journal.baj
+  ├── snapshot.baf
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\chrome_cart_db
+  ├── LOCK
+  ├── LOG
+  ├── LOG.old
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\ClientCertificates
+  ├── LOCK
+  ├── LOG
+  ├── LOG.old
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\Code Cache
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\Code Cache\js
+  ├── 00e6a9155769dda0_0
+  ├── 0b81edbdc7d30feb_0
+  ├── 0cb41ebf4c63e8a8_0
+  ├── 0e64269441361ab2_0
+  ├── 19766a289a8bc17e_0
+  ├── 1b635c63011a1a4b_0
+  ├── 1ddcaa3bdc363dd6_0
+  ├── 1f574f4921724f7a_0
+  ├── 2806e0844154b2db_0
+  ├── 296464df7cf7ffd3_0
+  ├── 2acc8427778b38b3_0
+  ├── 2f23933ef2b0f9e8_0
+  ├── 300cc05e6f67b3c7_0
+  ├── 41dbcd9d4cf8c76f_0
+  ├── 462c9b1d5817327b_0
+  ├── 46e39134a101c38b_0
+  ├── 5128a0d5cf4a227b_0
+  ├── 53625d9cca628f92_0
+  ├── 55af7ce5ece4b442_0
+  ├── 628bfc700d45cc58_0
+  ├── 63d82e7904ff1ce6_0
+  ├── 6bca976a38fcc517_0
+  ├── 6f0a88335c4529c8_0
+  ├── 71689f035e1535cd_0
+  ├── 7a6a4befc1fb3a96_0
+  ├── 7eb33fe6e31e7a51_0
+  ├── 81186d03afaea08f_0
+  ├── 82d9de17e8834389_0
+  ├── 84c403a38b4ed21d_0
+  ├── 8643893d92e7f68f_0
+  ├── 88a09dc43d042a4b_0
+  ├── 90957feca664af09_0
+  ├── 981bbe7c3a113d0d_0
+  ├── 991e556206ad914e_0
+  ├── 9937e7766b02f2b5_0
+  ├── 998a0fa32e94d6b5_0
+  ├── 9eacbf98e8e17f29_0
+  ├── 9fa13110a406384b_0
+  ├── 9fe431f326b8e09b_0
+  ├── a43ff077b578d9da_0
+  ├── ace991b60639694d_0
+  ├── b24f97360d13a240_0
+  ├── b411a512f5426d9b_0
+  ├── b422b54c9be5aef6_0
+  ├── bb66b0ec0183c009_0
+  ├── c39c9767082f7e1b_0
+  ├── c3d60d43161e1ebe_0
+  ├── c48b3399f7e3b2ff_0
+  ├── c54822f801dc3db9_0
+  ├── c7e60160e301a998_0
+  ├── c9b410e1845c61eb_0
+  ├── cb8206528b613e75_0
+  ├── cf0bcc7648fbb08a_0
+  ├── d61d9b217522f1f9_0
+  ├── dbe476b5dd60d10d_0
+  ├── e3ec4cb1d87d84d2_0
+  ├── eb45b0853827ce24_0
+  ├── f1eb5acd2880a1d8_0
+  ├── f583a77ce36a92cb_0
+  ├── f75e33333f226dae_0
+  ├── f96602795c1df5d2_0
+  ├── index
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\Code Cache\js\index-dir
+  ├── the-real-index
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\Code Cache\wasm
+  ├── index
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\Code Cache\wasm\index-dir
+  ├── the-real-index
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\commerce_subscription_db
+  ├── LOCK
+  ├── LOG
+  ├── LOG.old
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\DawnGraphiteCache
+  ├── data_0
+  ├── data_1
+  ├── data_2
+  ├── data_3
+  ├── index
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\DawnWebGPUCache
+  ├── data_0
+  ├── data_1
+  ├── data_2
+  ├── data_3
+  ├── index
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\discounts_db
+  ├── LOCK
+  ├── LOG
+  ├── LOG.old
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\discount_infos_db
+  ├── LOCK
+  ├── LOG
+  ├── LOG.old
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\Extension Rules
+  ├── 000003.log
+  ├── CURRENT
+  ├── LOCK
+  ├── LOG
+  ├── MANIFEST-000001
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\Extension Scripts
+  ├── 000003.log
+  ├── CURRENT
+  ├── LOCK
+  ├── LOG
+  ├── MANIFEST-000001
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\Extension State
+  ├── 000003.log
+  ├── CURRENT
+  ├── LOCK
+  ├── LOG
+  ├── LOG.old
+  ├── MANIFEST-000001
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\Feature Engagement Tracker
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\Feature Engagement Tracker\AvailabilityDB
+  ├── LOCK
+  ├── LOG
+  ├── LOG.old
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\Feature Engagement Tracker\EventDB
+  ├── LOCK
+  ├── LOG
+  ├── LOG.old
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\GCM Store
+  ├── 000003.log
+  ├── CURRENT
+  ├── LOCK
+  ├── LOG
+  ├── LOG.old
+  ├── MANIFEST-000001
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\GPUCache
+  ├── data_0
+  ├── data_1
+  ├── data_2
+  ├── data_3
+  ├── index
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\IndexedDB
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\IndexedDB\https_www.linkedin.com_0.indexeddb.leveldb
+  ├── 000003.log
+  ├── CURRENT
+  ├── LOCK
+  ├── LOG
+  ├── LOG.old
+  ├── MANIFEST-000001
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\Local Storage
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\Local Storage\leveldb
+  ├── 000003.log
+  ├── CURRENT
+  ├── LOCK
+  ├── LOG
+  ├── LOG.old
+  ├── MANIFEST-000001
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\Network
+  ├── Cookies
+  ├── Cookies-journal
+  ├── Device Bound Sessions
+  ├── Device Bound Sessions-journal
+  ├── Network Persistent State
+  ├── NetworkDataMigrated
+  ├── Reporting and NEL
+  ├── Reporting and NEL-journal
+  ├── TransportSecurity
+  ├── Trust Tokens
+  ├── Trust Tokens-journal
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\parcel_tracking_db
+  ├── LOCK
+  ├── LOG
+  ├── LOG.old
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\PersistentOriginTrials
+  ├── LOCK
+  ├── LOG
+  ├── LOG.old
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\Safe Browsing Network
+  ├── NetworkDataMigrated
+  ├── Safe Browsing Cookies
+  ├── Safe Browsing Cookies-journal
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\Segmentation Platform
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\Segmentation Platform\SegmentInfoDB
+  ├── LOCK
+  ├── LOG
+  ├── LOG.old
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\Segmentation Platform\SignalDB
+  ├── LOCK
+  ├── LOG
+  ├── LOG.old
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\Segmentation Platform\SignalStorageConfigDB
+  ├── LOCK
+  ├── LOG
+  ├── LOG.old
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\Session Storage
+  ├── 000003.log
+  ├── CURRENT
+  ├── LOCK
+  ├── LOG
+  ├── LOG.old
+  ├── MANIFEST-000001
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\Sessions
+  ├── Session_13423685241065368
+  ├── Session_13423685248927016
+  ├── Tabs_13423685241545024
+  ├── Tabs_13423685249161063
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\Shared Dictionary
+  ├── db
+  ├── db-journal
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\Shared Dictionary\cache
+  ├── index
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\Shared Dictionary\cache\index-dir
+  ├── the-real-index
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\shared_proto_db
+  ├── 000003.log
+  ├── CURRENT
+  ├── LOCK
+  ├── LOG
+  ├── LOG.old
+  ├── MANIFEST-000001
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\shared_proto_db\metadata
+  ├── 000003.log
+  ├── CURRENT
+  ├── LOCK
+  ├── LOG
+  ├── LOG.old
+  ├── MANIFEST-000001
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\Site Characteristics Database
+  ├── 000003.log
+  ├── CURRENT
+  ├── LOCK
+  ├── LOG
+  ├── LOG.old
+  ├── MANIFEST-000001
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\Sync Data
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\Sync Data\LevelDB
+  ├── 000003.log
+  ├── CURRENT
+  ├── LOCK
+  ├── LOG
+  ├── LOG.old
+  ├── MANIFEST-000001
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\WebStorage
+  ├── QuotaManager
+  ├── QuotaManager-journal
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\extensions_crx_cache
+  ├── metadata.json
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\GraphiteDawnCache
+  ├── data_0
+  ├── data_1
+  ├── data_2
+  ├── data_3
+  ├── index
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\GrShaderCache
+  ├── data_0
+  ├── data_1
+  ├── data_2
+  ├── data_3
+  ├── f_000001
+  ├── f_000002
+  ├── f_000003
+  ├── f_000004
+  ├── f_000005
+  ├── f_000006
+  ├── f_000007
+  ├── index
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Safe Browsing
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\segmentation_platform
+  ├── ukm_db
+
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\ShaderCache
+  ├── data_0
+  ├── data_1
+  ├── data_2
+  ├── data_3
+  ├── index
+
+[DIRETÓRIO] .\ScriptsParaCadaDomínio
+  ├── CV-Automation.code-workspace
+  ├── linkedin.py

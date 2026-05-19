@@ -11,11 +11,15 @@ CONFIG = {
     "loops_sistema": 0,
     
     # Delay forçado (em segundos) entre cada ação no formulário para auditoria visual
-    "delay_passo": 0,
+    "delay_passo": 5,
     
+   
     # Caminho do seu Currículo padrão para a validação visual do Tkinter
-    "caminho_cv_padrao": os.path.abspath("MeusDocumentos/CV_Marlon_Viana.pdf"),
+    "caminho_cv_padrao": os.path.abspath("CV-Data/CVs/CV - Marlon - DevFullStack.pdf"),
     
+    "chrome_user_data_windows": os.path.abspath("PerfilAutomaçãoChrome"),
+    "chrome_perfil_nome": "Default"
+
     # Caminho do Perfil do Arc Browser no Windows (Modificado para sua máquina)
-    "arc_user_data_windows": os.path.expandvars(r"%LocalAppData%\Arc\User Data")
+    # "arc_user_data_windows": os.path.expandvars(r"%LocalAppData%\Arc\User Data")
 }
