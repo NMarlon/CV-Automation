@@ -1,0 +1,23 @@
+{
+  "linkedin.com": {
+    "url_busca": "https://www.linkedin.com/jobs/search/?keywords={keyword}",
+    "seletores": {
+      "lista_vagas": ".scaffold-layout__list-container_v2 > li",
+      "card_vaga_link": "a.job-card-container__link",
+      "titulo_vaga": "h1.job-details-jobs-unified-top-card__job-title",
+      "empresa_vaga": ".job-details-jobs-unified-top-card__company-name a",
+      "local_vaga": ".job-details-jobs-unified-top-card__bullet-point:nth-child(1)",
+      "modalidade_vaga": ".job-details-jobs-unified-top-card__bullet-point:nth-child(2)",
+      "data_postagem": "span.tvm__text--neutral:nth-of-type(1)",
+      "num_candidatos": "span.tvm__text--neutral:nth-of-type(2)",
+      "descricao_vaga": "#job-details",
+      "botao_proxima_pagina": "button[aria-label^='Página']",
+      "botao_candidatura_simples": "button.jobs-apply-button",
+      "modal_formulario": ".jobs-easy-apply-modal",
+      "botao_avancar_modal": "button[aria-label*='Avançar'], button[aria-label*='Próximo']",
+      "botao_revisar_modal": "button[aria-label*='Revisar']",
+      "botao_enviar_vaga": "button[aria-label*='Enviar candidatura']",
+      "confirmacao_sucesso": ".artdeco-modal__header, .jobs-post-apply-modal__header-text"
+    }
+  }
+}

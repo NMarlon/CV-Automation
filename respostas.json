@@ -1,0 +1,13 @@
+{
+  "perguntas_mapeadas": {
+    "Quantos anos de experiência você tem com Python?": "experiencia_python",
+    "Quantos anos de experiência você possui em Python?": "experiencia_python",
+    "Qual sua pretensão salarial?": "pretensao_salarial",
+    "Você tem disponibilidade para trabalhar em regime presencial?": "disponibilidade_presencial"
+  },
+  "valores_respostas": {
+    "experiencia_python": "3",
+    "pretensao_salarial": "R$ 8.000,00",
+    "disponibilidade_presencial": "Sim"
+  }
+}

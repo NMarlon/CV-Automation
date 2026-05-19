@@ -1,0 +1,21 @@
+import os
+
+CONFIG = {
+    # Quantas vagas enviar por domínio por palavra-chave? (-1 = até o fim; 1 = uma vaga, etc.)
+    "vagas_por_termo": 4,
+    
+    # Palavras-chave para pesquisar sequencialmente
+    "palavras_chave": ["Python", "Desenvolvedor FullStack", "Cientista de Dados"],
+    
+    # Controle de Loop (0 = sem loop; -1 = infinito; 3 = faz o loop 3 vezes por toda a lista)
+    "loops_sistema": 0,
+    
+    # Delay forçado (em segundos) entre cada ação no formulário para auditoria visual
+    "delay_passo": 0,
+    
+    # Caminho do seu Currículo padrão para a validação visual do Tkinter
+    "caminho_cv_padrao": os.path.abspath("MeusDocumentos/CV_Marlon_Viana.pdf"),
+    
+    # Caminho do Perfil do Arc Browser no Windows (Modificado para sua máquina)
+    "arc_user_data_windows": os.path.expandvars(r"%LocalAppData%\Arc\User Data")
+}
