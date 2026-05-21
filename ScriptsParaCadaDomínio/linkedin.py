@@ -30,7 +30,7 @@ class LinkedInAutomator:
         if not os.path.exists("log_estatisticas.csv"):
             with open("log_estatisticas.csv", "w", newline="", encoding="utf-8") as f:
                 writer = csv.writer(f)
-                writer.writerow(["data_execucao", "titulo", "empresa", "link", "local", "modalidade", "postagem_bruta", "candidatos_bruto", "status", "erro"])
+                writer.writerow(["data_execucao", "titulo", "empresa", "link", "local", "modalidade", "postagem_bruta", "candidatos_bruto", "status", "erro", "titulo_pulado"])
     def _carregar_json(self, caminho):
         
         if os.path.exists(caminho):
@@ -42,7 +42,7 @@ class LinkedInAutomator:
         with open(caminho, 'w', encoding='utf-8') as f:
             json.dump(dados, f, indent=4, ensure_ascii=False)
 
-    def registrar_log(self, vaga_info, status, erro="", perguntas_respondidas=None):
+    def registrar_log(self, vaga_info, status, erro="", perguntas_respondidas=None, titulo_pulado=False):
         """Gera logs legíveis no log.log e tabulares no log_estatisticas.csv"""
         agora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         
@@ -51,6 +51,7 @@ class LinkedInAutomator:
             f.write(f"\n[{agora}] ---------- VAGA PROCESSADA ----------\n")
             f.write(f"Título: {vaga_info.get('titulo')}\nEmpresa: {vaga_info.get('empresa')}\n")
             f.write(f"Link: {vaga_info.get('link')}\nStatus: {status}\n")
+            if titulo_pulado: f.write("Motivo: Título não aprovado ou desaprovado.\n")
             if erro: f.write(f"Erro encontrado: {erro}\n")
             if perguntas_respondidas: f.write(f"Perguntas respondidas: {json.dumps(perguntas_respondidas)}\n")
             f.write("-----------------------------------------\n")
@@ -60,11 +61,11 @@ class LinkedInAutomator:
         with open("log_estatisticas.csv", "a", newline="", encoding="utf-8") as f:
             writer = csv.writer(f)
             if not csv_existe:
-                writer.writerow(["data_execucao", "titulo", "empresa", "link", "local", "modalidade", "postagem_bruta", "candidatos_bruto", "status", "erro"])
+                writer.writerow(["data_execucao", "titulo", "empresa", "link", "local", "modalidade", "postagem_bruta", "candidatos_bruto", "status", "erro", "titulo_pulado"])
             writer.writerow([
                 agora, vaga_info.get('titulo'), vaga_info.get('empresa'), vaga_info.get('link'),
                 vaga_info.get('local'), vaga_info.get('modalidade'), vaga_info.get('postagem'),
-                vaga_info.get('candidatos'), status, erro
+                vaga_info.get('candidatos'), status, erro, "Sim" if titulo_pulado else "Não"
             ])
 
     def tratar_excecao(self, link, passo, erro):
@@ -317,26 +318,49 @@ class LinkedInAutomator:
             
             # Varredura das vagas da barra lateral esquerda
             lista_itens = page.query_selector_all(self.dados_integracao["seletores"]["lista_vagas"])
-            urls_vagas_pagina = []
+            vagas_extraidas = []
             
             for item in lista_itens:
                 link_elem = item.query_selector(self.dados_integracao["seletores"]["card_vaga_link"])
+                titulo_elem = item.query_selector(self.dados_integracao["seletores"]["titulo_vaga_card"])
+
                 if link_elem:
                     href = link_elem.get_attribute("href")
                     url_limpa = href.split("?")[0] if href else ""
-                    if url_limpa and url_limpa not in urls_vagas_pagina:
-                        urls_vagas_pagina.append(url_limpa)
+                    titulo = titulo_elem.inner_text().strip() if titulo_elem else "Título não encontrado"
 
-            print(f"📦 Encontradas {len(urls_vagas_pagina)} vagas nesta página.")
-            
-            with open("log.log", "a", encoding="utf-8") as f:
-                f.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Encontradas {len(urls_vagas_pagina)} vagas para o termo '{palavra_chave}'.\n")
+                    if url_limpa:
+                        vagas_extraidas.append({
+                            "url": url_limpa,
+                            "titulo": titulo
+                        })
 
-            for url in urls_vagas_pagina:
+            if not vagas_extraidas:
+                print("🏁 Nenhuma vaga encontrada na página.")
+                with open("log.log", "a", encoding="utf-8") as f:
+                    f.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] 🏁 Nenhuma vaga encontrada para o termo '{palavra_chave}'.\n")
+            else:
+                print(f"📦 Encontradas {len(vagas_extraidas)} vagas nesta página.")
+                with open("log.log", "a", encoding="utf-8") as f:
+                    f.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Encontradas {len(vagas_extraidas)} vagas para o termo '{palavra_chave}'.\n")
+
+            for vaga in vagas_extraidas:
                 if limite_vagas != -1 and vagas_processadas >= limite_vagas:
                     print("🛑 Limite de vagas atingido para esta palavra-chave.")
                     break
                 
+                url = vaga["url"]
+                titulo = vaga["titulo"]
+
+                # --- Lógica de Filtro de Título ---
+                aprovado = any(keyword.lower() in titulo.lower() for keyword in self.config.get("titulos_aprovados", []))
+                desaprovado = any(keyword.lower() in titulo.lower() for keyword in self.config.get("titulos_desaprovados", []))
+
+                if not aprovado or desaprovado:
+                    print(f"⏩ Pulando vaga por filtro de título: {titulo}")
+                    self.registrar_log({"titulo": titulo, "link": url}, "titulo_pulado", titulo_pulado=True)
+                    continue
+
                 sucesso = self.aplicar_vaga(page, url)
                 if sucesso:
                     vagas_processadas += 1

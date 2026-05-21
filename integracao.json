@@ -2,8 +2,9 @@
   "linkedin.com": {
     "url_busca": "https://www.linkedin.com/jobs/search/?keywords={keyword}",
     "seletores": {
-      "lista_vagas": ".scaffold-layout__list-container_v2 > li",
+      "lista_vagas": "li.scaffold-layout__list-item",
       "card_vaga_link": "a.job-card-container__link",
+      "titulo_vaga_card": ".job-card-list__title--link",
       "titulo_vaga": "h1.job-details-jobs-unified-top-card__job-title",
       "empresa_vaga": ".job-details-jobs-unified-top-card__company-name a",
       "local_vaga": ".job-details-jobs-unified-top-card__bullet-point:nth-child(1)",
