@@ -3,13 +3,11 @@ Relatório de estrutura: C:\MarlonScripts\CV-Automation
 
 
 [DIRETÓRIO] .
-  ├── .env
   ├── .gitignore
   ├── AGENTS.md
   ├── Compactação ALL-in-ONE.py
   ├── configuracoes.py
   ├── Consolidado-CV-Auto.md
-  ├── CV-Automation.code-workspace
   ├── estatisticas.py
   ├── integracao.json
   ├── interface_humana.py
@@ -23,18 +21,14 @@ Relatório de estrutura: C:\MarlonScripts\CV-Automation
   ├── respostas.json
 
 [DIRETÓRIO] .\CV-Data
-  ├── Sobre Marlon.md
 
 [DIRETÓRIO] .\CV-Data\CVs
-  ├── CV - Marlon - DevFullStack.pdf
-  ├── CV - Marlon Viana - Ciência da Computação 260212.pdf
 
 [DIRETÓRIO] .\Para os Devs
   ├── Pontos importantes.md
 
 [DIRETÓRIO] .\PerfilAutomaçãoChrome
   ├── CrashpadMetrics-active.pma
-  ├── CrashpadMetrics.pma
   ├── first_party_sets.db
   ├── first_party_sets.db-journal
   ├── Last Browser
@@ -53,11 +47,6 @@ Relatório de estrutura: C:\MarlonScripts\CV-Automation
   ├── BrowserMetrics-6A0C9D68-4748.pma
   ├── BrowserMetrics-6A0C9D76-6BA8.pma
   ├── BrowserMetrics-6A0C9D7E-4D68.pma
-  ├── BrowserMetrics-6A0CB03A-4338.pma
-  ├── BrowserMetrics-6A0F0544-7F1C.pma
-  ├── BrowserMetrics-6A0F0AA5-7340.pma
-  ├── BrowserMetrics-6A0F0AA6-4918.pma
-  ├── BrowserMetrics-6A0F0AD4-36A8.pma
 
 [DIRETÓRIO] .\PerfilAutomaçãoChrome\component_crx_cache
   ├── metadata.json
@@ -120,9 +109,7 @@ Relatório de estrutura: C:\MarlonScripts\CV-Automation
 
 [DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\blob_storage
 
-[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\blob_storage\2afb8759-3937-49ba-8655-378222aef40b
-
-[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\blob_storage\99ac9d9a-f8a5-433a-b22e-e0893057405b
+[DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\blob_storage\be6dfc57-7986-4683-8d58-b21b76d972cc
 
 [DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\BudgetDatabase
   ├── LOCK
@@ -142,11 +129,13 @@ Relatório de estrutura: C:\MarlonScripts\CV-Automation
   ├── f_000004
   ├── f_000005
   ├── f_000006
+  ├── f_000007
   ├── f_000008
   ├── f_000009
   ├── f_00000a
   ├── f_00000b
   ├── f_00000c
+  ├── f_00000d
   ├── f_00000e
   ├── f_00000f
   ├── f_000010
@@ -171,62 +160,6 @@ Relatório de estrutura: C:\MarlonScripts\CV-Automation
   ├── f_000023
   ├── f_000024
   ├── f_000025
-  ├── f_000026
-  ├── f_000029
-  ├── f_00002a
-  ├── f_00002b
-  ├── f_00002c
-  ├── f_00002d
-  ├── f_00002e
-  ├── f_00002f
-  ├── f_000030
-  ├── f_000031
-  ├── f_000032
-  ├── f_000033
-  ├── f_000034
-  ├── f_000035
-  ├── f_000036
-  ├── f_000037
-  ├── f_000038
-  ├── f_000039
-  ├── f_00003a
-  ├── f_00003b
-  ├── f_00003c
-  ├── f_00003d
-  ├── f_00003e
-  ├── f_00003f
-  ├── f_000040
-  ├── f_000041
-  ├── f_000042
-  ├── f_000043
-  ├── f_000044
-  ├── f_000045
-  ├── f_000046
-  ├── f_000047
-  ├── f_000048
-  ├── f_000049
-  ├── f_00004a
-  ├── f_00004b
-  ├── f_00004c
-  ├── f_00004d
-  ├── f_00004e
-  ├── f_00004f
-  ├── f_000050
-  ├── f_000051
-  ├── f_000052
-  ├── f_000053
-  ├── f_000054
-  ├── f_000055
-  ├── f_000056
-  ├── f_000057
-  ├── f_000058
-  ├── f_000059
-  ├── f_00005a
-  ├── f_00005b
-  ├── f_00005c
-  ├── f_00005d
-  ├── f_00005e
-  ├── f_00005f
   ├── index
 
 [DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\Cache\No_Vary_Search
@@ -247,195 +180,66 @@ Relatório de estrutura: C:\MarlonScripts\CV-Automation
 
 [DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\Code Cache\js
   ├── 00e6a9155769dda0_0
-  ├── 05f333b42bedd3e2_0
-  ├── 0756ab318829a86f_0
-  ├── 0ada3eabaaddd4e9_0
   ├── 0b81edbdc7d30feb_0
-  ├── 0bbc1e9defad5146_0
-  ├── 0c77306e65a45b2c_0
   ├── 0cb41ebf4c63e8a8_0
   ├── 0e64269441361ab2_0
-  ├── 0efeb5143e3f5975_0
-  ├── 0fb5f447796c7c52_0
-  ├── 107c358c3361303b_0
-  ├── 1188be7a183994df_0
-  ├── 137387d33355a685_0
-  ├── 192eaa042c39e8b1_0
   ├── 19766a289a8bc17e_0
   ├── 1b635c63011a1a4b_0
-  ├── 1b839d65d1b7943b_0
-  ├── 1c83a0d04ac8c9af_0
   ├── 1ddcaa3bdc363dd6_0
   ├── 1f574f4921724f7a_0
-  ├── 2057a9345a360dce_0
-  ├── 2221b34c631a9630_0
-  ├── 2271caef02d2fed4_0
-  ├── 2736bd8fd60abdb2_0
   ├── 2806e0844154b2db_0
   ├── 296464df7cf7ffd3_0
   ├── 2acc8427778b38b3_0
-  ├── 2b2b7af4279e1e50_0
-  ├── 2dc2b09882d6d547_0
   ├── 2f23933ef2b0f9e8_0
   ├── 300cc05e6f67b3c7_0
-  ├── 3041b56f02f9c550_0
-  ├── 32745eb9a2cfc0d5_0
-  ├── 3417ef044b1ccf46_0
-  ├── 344deb6b60e9a712_0
-  ├── 34e97087a407e35f_0
-  ├── 3a5e18d082b86306_0
-  ├── 3bb3f044d4f49b45_0
-  ├── 3bbe4e145ed56c8c_0
-  ├── 3c5088ab24365396_0
   ├── 41dbcd9d4cf8c76f_0
   ├── 462c9b1d5817327b_0
-  ├── 463f02a58468286a_0
-  ├── 4676a76412a4c15f_0
   ├── 46e39134a101c38b_0
-  ├── 48803f41aaa46881_0
-  ├── 4a1224f9b32132f8_0
-  ├── 4a870c1f9a346fe8_0
-  ├── 4bd0e00680169245_0
-  ├── 4dbd131494fb0dc4_0
-  ├── 4dc940def287a5b9_0
-  ├── 4e00584ca9bf7e39_0
-  ├── 4e81554cda189c94_0
-  ├── 4e8593edb6c7ecff_0
-  ├── 4fc3e3b441cdda7b_0
   ├── 5128a0d5cf4a227b_0
-  ├── 51a100668f9fa413_0
   ├── 53625d9cca628f92_0
-  ├── 53a54e5af6082405_0
-  ├── 549e09f7bd566669_0
-  ├── 550b6b6932cf9926_0
   ├── 55af7ce5ece4b442_0
-  ├── 5849f6842ad35013_0
-  ├── 5bc97125fa034d0c_0
-  ├── 5c7330df77d6b938_0
-  ├── 5e4317cf6ef0f769_0
-  ├── 6186dd4b6c57781e_0
-  ├── 61ee800e1420a75f_0
   ├── 628bfc700d45cc58_0
-  ├── 63c37ebc6fe84ad8_0
   ├── 63d82e7904ff1ce6_0
-  ├── 648f2b0c87ac8fee_0
   ├── 6bca976a38fcc517_0
-  ├── 6d5777f866190982_0
-  ├── 6e72925932b345f9_0
-  ├── 6ed8ccddf2728151_0
   ├── 6f0a88335c4529c8_0
-  ├── 6fa6429858ae77e8_0
   ├── 71689f035e1535cd_0
-  ├── 71b61943076ddece_0
-  ├── 7510aa2a4864115e_0
-  ├── 75631e2ac9af6f28_0
-  ├── 7700e351aec6e44c_0
-  ├── 7788eaafb680352e_0
-  ├── 77e259220e0c2ad9_0
-  ├── 787c44591ddaec2b_0
-  ├── 78d858ab80fdaff5_0
   ├── 7a6a4befc1fb3a96_0
   ├── 7eb33fe6e31e7a51_0
   ├── 81186d03afaea08f_0
   ├── 82d9de17e8834389_0
-  ├── 83733a553fa83776_0
   ├── 84c403a38b4ed21d_0
   ├── 8643893d92e7f68f_0
   ├── 88a09dc43d042a4b_0
-  ├── 8ae0a00807d4c38a_0
   ├── 90957feca664af09_0
-  ├── 94c124a1beae971e_0
-  ├── 952ca7a7ec3d9657_0
-  ├── 955c12554b80ec56_0
-  ├── 965682490d7e15ce_0
-  ├── 9760437994d4b36f_0
-  ├── 978dd22186fd5ca6_0
   ├── 981bbe7c3a113d0d_0
   ├── 991e556206ad914e_0
   ├── 9937e7766b02f2b5_0
   ├── 998a0fa32e94d6b5_0
-  ├── 9dcc71794ecaabb5_0
-  ├── 9e7f92fc36bf8396_0
   ├── 9eacbf98e8e17f29_0
-  ├── 9f62c1a1de39be77_0
   ├── 9fa13110a406384b_0
   ├── 9fe431f326b8e09b_0
-  ├── a131345b1de3b9ef_0
   ├── a43ff077b578d9da_0
-  ├── a66067fef5a4bd58_0
-  ├── a6f90b9fb3388b46_0
-  ├── a7c4effc61ffb5c1_0
-  ├── a935edb2fe297a33_0
-  ├── a9951bd676f6506c_0
   ├── ace991b60639694d_0
-  ├── ad04d87907cd7c24_0
-  ├── ad2766f503fd45db_0
-  ├── aece15249e06eee5_0
-  ├── b0fdb1878e402a61_0
   ├── b24f97360d13a240_0
-  ├── b29aec7b1c4edb47_0
   ├── b411a512f5426d9b_0
   ├── b422b54c9be5aef6_0
-  ├── b48a00a8327cf30a_0
   ├── bb66b0ec0183c009_0
-  ├── bbab0074f4498499_0
-  ├── bbabaf99add69ef8_0
-  ├── bc63e4cf34e96d31_0
-  ├── bdf3c1debe2ea77a_0
-  ├── c0678f7627fbfe46_0
-  ├── c0a4e7613f3e8ecd_0
-  ├── c2a8a4f96f17fab9_0
-  ├── c366ad125d6e3d9c_0
   ├── c39c9767082f7e1b_0
   ├── c3d60d43161e1ebe_0
-  ├── c400df3bf1c74231_0
   ├── c48b3399f7e3b2ff_0
   ├── c54822f801dc3db9_0
   ├── c7e60160e301a998_0
   ├── c9b410e1845c61eb_0
-  ├── ca3bef7d95eb7a0f_0
-  ├── cb023d7612264004_0
   ├── cb8206528b613e75_0
-  ├── ccf0a36667bfa80e_0
-  ├── cde9db517721b0db_0
-  ├── ce374ab2a0bba328_0
   ├── cf0bcc7648fbb08a_0
-  ├── cf2de406a32c7f81_0
-  ├── d1b8b6e6a96ebd84_0
-  ├── d2fd24de9b253dee_0
-  ├── d3ce6c1c7e08ad9b_0
-  ├── d611953f9ac68e06_0
   ├── d61d9b217522f1f9_0
-  ├── d69c6766249469eb_0
   ├── dbe476b5dd60d10d_0
-  ├── dc2da53159d4ca4d_0
-  ├── dda962a36e56d47c_0
-  ├── de5bca52d253a708_0
-  ├── de81f1b7f685f999_0
-  ├── deb4b2c4f2760b6e_0
-  ├── e2c3ccd35d4b600d_0
-  ├── e2da57c8054f9b1a_0
-  ├── e2db5b12e99db973_0
-  ├── e2dc7c198087f5fa_0
-  ├── e35fa8271e79f4c9_0
   ├── e3ec4cb1d87d84d2_0
-  ├── e4a423f2ca2f1d3d_0
-  ├── e7400bace6766dbf_0
-  ├── e9d97fa7087be97b_0
   ├── eb45b0853827ce24_0
-  ├── edc7dfd590d1ec15_0
-  ├── f14639373662841a_0
   ├── f1eb5acd2880a1d8_0
   ├── f583a77ce36a92cb_0
-  ├── f68c9587963f4f85_0
-  ├── f74b8d43fd54812d_0
-  ├── f74cd4e15fd220c0_0
   ├── f75e33333f226dae_0
-  ├── f7b56e3ec89f5919_0
-  ├── f81375be8385f7bd_0
   ├── f96602795c1df5d2_0
-  ├── f9bf023479ba1dcc_0
-  ├── fd03a2c14c99aa2d_0
   ├── index
 
 [DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\Code Cache\js\index-dir
@@ -599,10 +403,10 @@ Relatório de estrutura: C:\MarlonScripts\CV-Automation
   ├── MANIFEST-000001
 
 [DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\Sessions
-  ├── Session_13423844265720720
-  ├── Session_13423844309613327
-  ├── Tabs_13423844266117909
-  ├── Tabs_13423844309713422
+  ├── Session_13423685241065368
+  ├── Session_13423685248927016
+  ├── Tabs_13423685241545024
+  ├── Tabs_13423685249161063
 
 [DIRETÓRIO] .\PerfilAutomaçãoChrome\Default\Shared Dictionary
   ├── db
@@ -674,17 +478,6 @@ Relatório de estrutura: C:\MarlonScripts\CV-Automation
   ├── f_000005
   ├── f_000006
   ├── f_000007
-  ├── f_000008
-  ├── f_000009
-  ├── f_00000a
-  ├── f_00000b
-  ├── f_00000c
-  ├── f_00000d
-  ├── f_00000e
-  ├── f_00000f
-  ├── f_000010
-  ├── f_000011
-  ├── f_000012
   ├── index
 
 [DIRETÓRIO] .\PerfilAutomaçãoChrome\Safe Browsing
@@ -701,5 +494,4 @@ Relatório de estrutura: C:\MarlonScripts\CV-Automation
 
 [DIRETÓRIO] .\ScriptsParaCadaDomínio
   ├── CV-Automation.code-workspace
-  ├── gupy.py
   ├── linkedin.py
