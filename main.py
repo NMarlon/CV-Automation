@@ -31,94 +31,78 @@ class OrquestradorAutomacao:
         if not lista_execucao: return
 
         print("\n⚡ [PRIORIDADE] Processando Lista de Execução Manual...")
-        
-        user_data_dir = self.config.get("chrome_user_data_windows")
+        u_dir = self.config.get("chrome_user_data_windows")
         perfil = self.config.get("chrome_perfil_nome", "Default")
         
         with sync_playwright() as p:
             context = p.chromium.launch_persistent_context(
-                user_data_dir, headless=False, channel="chrome",
+                u_dir, headless=False, channel="chrome",
                 args=[f"--profile-directory={perfil}", "--start-maximized"]
             )
             page = context.pages[0] if context.pages else context.new_page()
 
-            # Instanciar automadores uma vez se possível
             from linkedin import LinkedInAutomator
             from gupy import GupyAutomator
             automator_li = LinkedInAutomator(self.config)
             automator_gp = GupyAutomator(self.config)
-            
-            vagas_restantes = list(lista_execucao)
-            for vaga_url in lista_execucao:
-                print(f"\n🚀 Prioritário: {vaga_url}")
-                
-                if "linkedin.com" in vaga_url:
+
+            v_restantes = list(lista_execucao)
+            for url in lista_execucao:
+                print(f"\n🚀 Prioritário: {url}")
+                if "linkedin.com" in url:
                     automator_li._garantir_login(page)
-                    automator_li.aplicar_vaga(page, vaga_url)
-                elif "gupy.io" in vaga_url:
-                    automator_gp.aplicar_vaga(page, vaga_url)
+                    automator_li.aplicar_vaga(page, url)
+                elif "gupy.io" in url:
+                    automator_gp.aplicar_vaga(page, url)
                 else:
-                    print(f"⚠️ Domínio não suportado: {vaga_url}")
+                    print(f"⚠️ Domínio não suportado: {url}")
 
-                vagas_restantes.remove(vaga_url)
-                self._salvar_json(self.lista_execucao_path, vagas_restantes)
-
+                v_restantes.remove(url)
+                self._salvar_json(self.lista_execucao_path, v_restantes)
             context.close()
         print("✅ Lista prioritária finalizada!")
 
-    def rodar_ciclo_dominios(self):
-        dominios_ativos = self._carregar_json(self.dominios_ativos_path)
-        if not dominios_ativos: return
+    def rodar_ciclo(self):
+        dominios = self._carregar_json(self.dominios_ativos_path)
+        if not dominios: return
 
-        for dominio in dominios_ativos:
-            print(f"\n🌐 ================= ATIVANDO DOMÍNIO: {dominio} =================")
-            try:
-                if dominio == "linkedin.com":
-                    from linkedin import LinkedInAutomator
-                    LinkedInAutomator(self.config).executar_pesquisa("") # Termos são internos agora
-                elif dominio == "gupy.io":
-                    from gupy import GupyAutomator
-                    GupyAutomator(self.config).executar_pesquisa("")
-            except KeyboardInterrupt:
-                self._pausar_ou_cancelar()
-            except Exception as e:
-                print(f"❌ Erro no domínio {dominio}: {e}")
+        for dom in dominios:
+            print(f"\n🌐 ================= DOMÍNIO: {dom} =================")
+            for termo in self.config["palavras_chave"]:
+                print(f"\n🔍 [PESQUISA] Termo: {termo} em {dom}")
+                try:
+                    if dom == "linkedin.com":
+                        from linkedin import LinkedInAutomator
+                        LinkedInAutomator(self.config).executar_pesquisa(termo)
+                    elif dom == "gupy.io":
+                        from gupy import GupyAutomator
+                        GupyAutomator(self.config).executar_pesquisa(termo)
+                except KeyboardInterrupt:
+                    self._pausar_ou_cancelar()
+                except Exception as e:
+                    print(f"❌ Erro crítico em {dom} / {termo}: {e}")
 
     def _pausar_ou_cancelar(self):
-        print("\n🛑 Interrupção detectada.")
-        opcao = input("Digite 'C' para Cancelar ou 'P' para Pausar: ").strip().upper()
-        if opcao == 'C': sys.exit(0)
-        elif opcao == 'P': input("PAUSADO. ENTER para continuar...")
+        op = input("\n🛑 PAUSA (P) ou CANCELAR (C)? ").strip().upper()
+        if op == 'C': sys.exit(0)
+        elif op == 'P': input("PAUSADO. ENTER para retomar...")
 
     def iniciar(self):
-        loop_config = self.config.get("loops_sistema", 0)
-        contador_loop = 0
+        loop_cfg = self.config.get("loops_sistema", 0)
+        c_loop = 0
         while True:
-            print(f"\n--- 🔄 CICLO (Loop: {contador_loop}) ---")
+            print(f"\n--- 🔄 CICLO GERAL (Loop: {c_loop}) ---")
             self.processar_lista_prioritaria()
-            
-            # Ajuste: Rodar para cada palavra-chave
-            for termo in self.config["palavras_chave"]:
-                print(f"\n🔍 [PESQUISA] Termo: {termo}")
-                dominios_ativos = self._carregar_json(self.dominios_ativos_path)
-                for dominio in dominios_ativos:
-                    try:
-                        if dominio == "linkedin.com":
-                            from linkedin import LinkedInAutomator
-                            LinkedInAutomator(self.config).executar_pesquisa(termo)
-                        elif dominio == "gupy.io":
-                            from gupy import GupyAutomator
-                            GupyAutomator(self.config).executar_pesquisa(termo)
-                    except KeyboardInterrupt: self._pausar_ou_cancelar()
-                    except Exception as e: print(f"❌ Erro: {e}")
+            self.rodar_ciclo()
 
             print("\n📊 Atualizando estatísticas...")
             from estatisticas import AnalisadorEstatisticas
             try: AnalisadorEstatisticas().processar_metricas()
             except: pass
 
-            contador_loop += 1
-            if loop_config == 0 or (loop_config > 0 and contador_loop >= loop_config): break
+            c_loop += 1
+            if loop_cfg == 0 or (loop_cfg > 0 and c_loop >= loop_cfg): break
+            print(f"\n💤 Aguardando 1 minuto...")
             time.sleep(60)
        
 if __name__ == "__main__":
