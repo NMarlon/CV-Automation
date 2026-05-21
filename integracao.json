@@ -19,5 +19,24 @@
       "botao_enviar_vaga": "button[aria-label*='Enviar candidatura']",
       "confirmacao_sucesso": ".artdeco-modal__header, .jobs-post-apply-modal__header-text"
     }
+  },
+  "gupy.io": {
+    "url_busca": "https://portal.gupy.io/job-search?term={keyword}",
+    "seletores": {
+      "lista_vagas": "ul > li[data-testid='job-list-item']",
+      "card_vaga_link": "a",
+      "titulo_vaga": "h1",
+      "empresa_vaga": "p[class*='JobDetail_companyName']",
+      "local_vaga": "span[data-testid='job-detail-location']",
+      "modalidade_vaga": "span[data-testid='job-detail-workplace-type']",
+      "data_postagem": "p[class*='JobDetail_publishedDate']",
+      "num_candidatos": "span[class*='JobDetail_candidatesCount']",
+      "descricao_vaga": "section[data-testid='job-description']",
+      "botao_candidatura_simples": "button[data-testid='apply-button']",
+      "modal_formulario": "div[role='dialog']",
+      "botao_avancar_modal": "button[type='submit'], button:has-text('Próximo'), button:has-text('Avançar')",
+      "botao_enviar_vaga": "button:has-text('Enviar'), button:has-text('Concluir')",
+      "confirmacao_sucesso": "h2:has-text('sucesso'), h2:has-text('parabéns')"
+    }
   }
 }
