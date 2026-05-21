@@ -8,7 +8,7 @@ CONFIG = {
     "palavras_chave": ["Python", "Desenvolvedor FullStack", "Cientista de Dados", "Automação de Processo"],
     
     # Filtros de Título
-    "titulos_aprovados": ["Python", "Desenvolvedor", "Data", "FullStack", "Backend", "Frontend", "Dados", "Ciência", "Júnior", "Trainee","Web", "HTML", "Automação", "Wordpress", "MySQL","API"],
+    "titulos_aprovados": ["Python", "Desenvolvedor", "Data", "FullStack", "Backend", "Frontend", "Dados", "Ciência", "Júnior", "Trainee"],
     "titulos_desaprovados": ["Estágio", "Sênior", "Gerente", "Motorista", "Faturista", "Assistente", "Analista de RH", "Vendedor", "Vendas", "Comercial", "Marketing", "Designer", "UX", "UI", "Suporte", "Help Desk", "Administrativo", "Técnico de Enfermagem"],
 
     # Configurações de Resiliência

@@ -2,6 +2,8 @@ import os
 import json
 import time
 import csv
+import sys
+import re
 from datetime import datetime
 from playwright.sync_api import sync_playwright
 from interface_humana import InterfaceHumana
@@ -52,19 +54,21 @@ class LinkedInAutomator:
         self._salvar_json(caminho_ajuste, lista_ajuste)
 
         if self.config.get("pausa_em_erro"):
-            print(f"\n🛑 [PAUSA EM ERRO] {passo} | {erro}")
+            print(f"\n🛑 [PAUSA EM ERRO] Ocorreu um erro no passo: {passo}")
+            print(f"🔗 Link: {link}")
+            print(f"❌ Erro: {erro}")
             input("Pressione ENTER para continuar após resolver manualmente...")
 
     def validar_titulo(self, titulo):
-        if not titulo: return False, "Vazio"
+        if not titulo: return False, "Título vazio"
         aprovados = self.config.get("titulos_aprovados", [])
         desaprovados = self.config.get("titulos_desaprovados", [])
-        t_up = titulo.upper()
+        titulo_upper = titulo.upper()
         for d in desaprovados:
-            if d.upper() in t_up: return False, f"Reprovado: {d}"
+            if d.upper() in titulo_upper: return False, f"Palavra desaprovada: {d}"
         for a in aprovados:
-            if a.upper() in t_up: return True, ""
-        return False, "Sem palavras aprovadas"
+            if a.upper() in titulo_upper: return True, ""
+        return False, "Sem palavras-chave aprovadas"
 
     def responder_fluxo_formulario(self, page, vaga_info):
         seletores = self.dados_integracao["seletores"]
@@ -84,12 +88,12 @@ class LinkedInAutomator:
                         resp = self.respostas_db.get("valores_respostas", {}).get(chave)
                         if self.config.get("confirmacao_manual"):
                             res_h = self.interface.confirmar_campo(texto_pergunta, resp, chave)
-                            if res_h["acao"] == "cancelar": raise Exception("Cancelado")
+                            if res_h["acao"] == "cancelar": raise Exception("Cancelado pelo usuário")
                             resp, acao = res_h["resposta"], res_h["acao"]
                         else: resp, acao = resp, "auto"
                     else:
                         res_h = self.interface.perguntar_resposta_nova(texto_pergunta)
-                        if res_h["acao"] == "cancelar": raise Exception("Cancelado")
+                        if res_h["acao"] == "cancelar": raise Exception("Cancelado pelo usuário")
                         resp, acao, chave = res_h["resposta"], res_h["acao"], res_h["chave"]
 
                     if acao == "salvar_atualizar":
@@ -126,7 +130,7 @@ class LinkedInAutomator:
                         self.registrar_log(vaga_info, "SUCESSO")
                         page.keyboard.press("Escape")
                         return True
-                    raise Exception("Sucesso não confirmado")
+                    raise Exception("Sucesso não confirmado após envio")
                 else: break
             return False
         except Exception as e:
@@ -143,8 +147,9 @@ class LinkedInAutomator:
 
         for t in range(tentativas):
             try:
-                page.goto(url_vaga, timeout=60000)
-                page.wait_for_load_state("networkidle")
+                print(f"🔗 Tentativa {t+1}/{tentativas}: Abrindo vaga {url_vaga}")
+                page.goto(url_vaga, timeout=60000, wait_until="domcontentloaded")
+                time.sleep(3)
 
                 # Extração Rica de Dados
                 for chave in ["titulo_vaga", "empresa_vaga", "local_vaga", "modalidade_vaga", "data_postagem", "num_candidatos"]:
@@ -155,35 +160,42 @@ class LinkedInAutomator:
 
                 val, mot = self.validar_titulo(vaga_info["titulo"])
                 if not val:
+                    print(f"⏭️ Pulando vaga por título: {vaga_info['titulo']} ({mot})")
                     self.registrar_log(vaga_info, "PULADA", titulo_pulado=vaga_info["titulo"])
                     return False
 
                 btn = page.query_selector(seletores["botao_candidatura_simples"])
                 if not btn:
+                    print(f"⏭️ Vaga não possui botão de Candidatura Simplificada.")
                     self.registrar_log(vaga_info, "SKIP", "Não é Candidatura Simplificada")
                     return False
 
+                print("🚀 Clicando em Candidatura Simplificada...")
                 btn.click()
                 page.wait_for_selector(seletores["modal_formulario"], timeout=15000)
                 return self.responder_fluxo_formulario(page, vaga_info)
             except Exception as e:
-                if t < tentativas - 1: time.sleep(intervalo)
+                print(f"⚠️ Erro na tentativa {t+1} de aplicação: {e}")
+                if t < tentativas - 1:
+                    time.sleep(intervalo)
                 else:
-                    self.tratar_excecao(url_vaga, "Aplicação Final", e)
+                    self.tratar_excecao(url_vaga, f"Tentativa Final Aplicação", e)
                     return False
         return False
 
     def _garantir_login(self, page):
-        page.goto("https://www.linkedin.com/feed/", timeout=60000)
+        page.goto("https://www.linkedin.com/feed/", timeout=60000, wait_until="domcontentloaded")
         if "feed" in page.url: return
-        page.goto("https://www.linkedin.com/login", timeout=60000)
+        page.goto("https://www.linkedin.com/login", timeout=60000, wait_until="domcontentloaded")
         email, senha = self.config.get("email"), self.config.get("senha")
         if email and senha:
             page.fill("input#username", email)
             page.fill("input#password", senha)
             page.click('button[type="submit"]')
             try: page.wait_for_url("**/feed/**", timeout=20000)
-            except: page.pause()
+            except:
+                print("⚠️ Login falhou ou requer Captcha.")
+                page.pause()
         else: page.pause()
 
     def executar_pesquisa(self, palavra_chave):
@@ -199,18 +211,17 @@ class LinkedInAutomator:
             try:
                 self._garantir_login(page)
                 v_enviadas, limite = 0, self.config.get("vagas_por_termo", 4)
-                p_atual = 0
+                p_atual = 1
 
                 while limite == -1 or v_enviadas < limite:
-                    url_busca = self.dados_integracao["url_busca"].format(keyword=palavra_chave) + f"&start={p_atual * 25}"
+                    url_busca = self.dados_integracao["url_busca"].format(keyword=palavra_chave) + f"&start={(p_atual - 1) * 25}"
 
-                    # Retry para carregar a página de busca
                     sucesso_busca = False
                     for b in range(tentativas_busca):
                         try:
-                            print(f"🔍 Busca '{palavra_chave}' Pág {p_atual+1} (Tentativa {b+1})")
-                            page.goto(url_busca, timeout=60000)
-                            page.wait_for_load_state("networkidle")
+                            print(f"🔍 Busca '{palavra_chave}' Pág {p_atual} (Tentativa {b+1})")
+                            page.goto(url_busca, timeout=60000, wait_until="domcontentloaded")
+                            time.sleep(5) # Aguarda renderização
                             sucesso_busca = True
                             break
                         except Exception as e:
@@ -218,9 +229,10 @@ class LinkedInAutomator:
                             if b < tentativas_busca - 1: time.sleep(intervalo)
 
                     if not sucesso_busca:
-                        self.tratar_excecao(url_busca, "Carregar Pesquisa", "Timeout excedido após tentativas")
+                        self.tratar_excecao(url_busca, f"Carregar Pesquisa {palavra_chave} Pág {p_atual}", "Timeout excedido")
                         break
 
+                    # Scroll lateral
                     seletor_lista = ".scaffold-layout__list"
                     if page.query_selector(seletor_lista):
                         for _ in range(4):
@@ -228,7 +240,9 @@ class LinkedInAutomator:
                             time.sleep(1)
 
                     cards = page.query_selector_all(self.dados_integracao["seletores"]["lista_vagas"])
-                    if not cards: break
+                    if not cards:
+                        print("🏁 Nenhuma vaga encontrada.")
+                        break
 
                     urls_titulos = []
                     for card in cards:
@@ -240,15 +254,39 @@ class LinkedInAutomator:
                                 self.registrar_log({"link": "N/A", "empresa": "N/A"}, "PULADA", titulo_pulado=t)
                                 continue
                             href = l_el.get_attribute("href")
-                            if href: urls_titulos.append((href.split("?")[0], t))
+                            if href:
+                                urls_titulos.append((href.split("?")[0], t))
 
                     for u, t in urls_titulos:
                         if limite != -1 and v_enviadas >= limite: break
-                        if self.aplicar_vaga(page, u): v_enviadas += 1
+                        if self.aplicar_vaga(page, u):
+                            v_enviadas += 1
+                            print(f"✅ Candidatura enviada ({v_enviadas}/{limite})")
                         time.sleep(2)
 
                     if limite != -1 and v_enviadas >= limite: break
-                    p_atual += 1
-                    if not page.query_selector(f"button[aria-label='Página {p_atual + 1}']"): break
+
+                    # Identificação de próxima página
+                    estado_pag = page.query_selector(self.dados_integracao["seletores"]["paginacao_state"]) if "paginacao_state" in self.dados_integracao["seletores"] else None
+                    if not estado_pag:
+                        estado_pag = page.query_selector(".jobs-search-pagination__page-state")
+
+                    if estado_pag:
+                        texto_pag = estado_pag.inner_text() # "Página 1 de 40"
+                        nums = re.findall(r'\d+', texto_pag)
+                        if len(nums) >= 2:
+                            atual, total = int(nums[0]), int(nums[1])
+                            if atual >= total: break
+
+                    btn_proxima = page.query_selector(self.dados_integracao["seletores"]["botao_proxima_pagina"])
+                    if btn_proxima and btn_proxima.is_visible():
+                        p_atual += 1
+                    else:
+                        break
+
+            except Exception as e:
+                print(f"❌ Erro crítico: {e}")
+                if self.config.get("pausa_em_erro"):
+                    input("PAUSA CRÍTICA. ENTER para continuar...")
             finally:
                 context.close()

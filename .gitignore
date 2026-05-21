@@ -5,10 +5,3 @@
 /PerfilAutomaçãoChrome/
 /.venv/
 /venv/
-__pycache__/estatisticas.cpython-314.pyc
-
-__pycache__/configuracoes.cpython-314.pyc
-.gitignore
-ScriptsParaCadaDomínio/__pycache__/linkedin.cpython-314.pyc
-.gitignore
-__pycache__/interface_humana.cpython-314.pyc
