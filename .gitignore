@@ -5,14 +5,10 @@
 /PerfilAutomaçãoChrome/
 /.venv/
 /venv/
+__pycache__/configuracoes.cpython-314.pyc
+__pycache__/interface_humana.cpython-314.pyc
+ScriptsParaCadaDomínio/__pycache__/linkedin.cpython-314.pyc
 
-
-
-# Python bytecode (cache)
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
 
 
 # Byte-compiled / optimized / DLL files
