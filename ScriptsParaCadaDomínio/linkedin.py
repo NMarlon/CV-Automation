@@ -10,27 +10,24 @@ class LinkedInAutomator:
     def __init__(self, config_global):
         self.config = config_global
         self.interface = InterfaceHumana()
-        self.dados_integracao = self._carregar_json("integracao.json")["linkedin.com"]
+        self.dados_integracao = self._carregar_json("integracao.json").get("linkedin.com", {})
         self.respostas_db = self._carregar_json("respostas.json")
-        
-        # GARANTE A CRIAÇÃO DOS ARQUIVOS DE LOG LOGO NO INÍCIO
         self._inicializar_arquivos_log()
 
     def _inicializar_arquivos_log(self):
-        """Garante que os arquivos de log existam para mensurar o progresso desde o primeiro minuto"""
         if not os.path.exists("log.log"):
             with open("log.log", "w", encoding="utf-8") as f:
                 f.write(f"=== SISTEMA DE LOGS INICIALIZADO EM {datetime.now()} ===\n")
-                
         if not os.path.exists("log_estatisticas.csv"):
             with open("log_estatisticas.csv", "w", newline="", encoding="utf-8") as f:
                 writer = csv.writer(f)
                 writer.writerow(["data_execucao", "titulo", "empresa", "link", "local", "modalidade", "postagem_bruta", "candidatos_bruto", "status", "erro"])
+
     def _carregar_json(self, caminho):
-        
         if os.path.exists(caminho):
             with open(caminho, 'r', encoding='utf-8') as f:
-                return json.load(f)
+                try: return json.load(f)
+                except: return {}
         return {}
 
     def _salvar_json(self, caminho, dados):
@@ -38,95 +35,92 @@ class LinkedInAutomator:
             json.dump(dados, f, indent=4, ensure_ascii=False)
 
     def registrar_log(self, vaga_info, status, erro="", perguntas_respondidas=None):
-        """Gera logs legíveis no log.log e tabulares no log_estatisticas.csv"""
         agora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        
-        # 1. Log textual legível
         with open("log.log", "a", encoding="utf-8") as f:
             f.write(f"\n[{agora}] ---------- VAGA PROCESSADA ----------\n")
-            f.write(f"Título: {vaga_info.get('titulo')}\nEmpresa: {vaga_info.get('empresa')}\n")
-            f.write(f"Link: {vaga_info.get('link')}\nStatus: {status}\n")
-            if erro: f.write(f"Erro encontrado: {erro}\n")
-            if perguntas_respondidas: f.write(f"Perguntas respondidas: {json.dumps(perguntas_respondidas)}\n")
+            f.write(f"Título: {vaga_info.get('titulo')}\nEmpresa: {vaga_info.get('empresa')}\nLink: {vaga_info.get('link')}\nStatus: {status}\n")
+            if erro: f.write(f"Erro: {erro}\n")
             f.write("-----------------------------------------\n")
-
-        # 2. Log em CSV para processamento estatístico posterior
-        csv_existe = os.path.exists("log_estatisticas.csv")
         with open("log_estatisticas.csv", "a", newline="", encoding="utf-8") as f:
             writer = csv.writer(f)
-            if not csv_existe:
-                writer.writerow(["data_execucao", "titulo", "empresa", "link", "local", "modalidade", "postagem_bruta", "candidatos_bruto", "status", "erro"])
-            writer.writerow([
-                agora, vaga_info.get('titulo'), vaga_info.get('empresa'), vaga_info.get('link'),
-                vaga_info.get('local'), vaga_info.get('modalidade'), vaga_info.get('postagem'),
-                vaga_info.get('candidatos'), status, erro
-            ])
+            writer.writerow([agora, vaga_info.get('titulo'), vaga_info.get('empresa'), vaga_info.get('link'), vaga_info.get('local'), vaga_info.get('modalidade'), vaga_info.get('postagem'), vaga_info.get('candidatos'), status, erro])
 
     def tratar_excecao(self, link, passo, erro):
-        """Trata falhas salvando o progresso na Lista a Ajustar"""
-        print(f"⚠️ Falha no passo [{passo}]: {erro}. Salvando na ListaAAjustar.")
-        lista_ajuste = self._carregar_json("lista_a_ajustar.json")
+        print(f"⚠️ Falha no passo [{passo}]: {erro}")
+        caminho_ajuste = "ListaAAjustar.json"
+        lista_ajuste = self._carregar_json(caminho_ajuste)
         if not isinstance(lista_ajuste, list): lista_ajuste = []
-        
-        lista_ajuste.append({
-            "url": link,
-            "passo_falha": passo,
-            "erro": str(erro),
-            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        })
-        self._salvar_json("lista_a_ajustar.json", lista_ajuste)
+        lista_ajuste.append({"url": link, "passo_falha": passo, "erro": str(erro), "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")})
+        self._salvar_json(caminho_ajuste, lista_ajuste)
 
     def responder_fluxo_formulario(self, page, vaga_info):
-        """Gerencia as etapas internas do Modal de Candidatura Simplificada"""
         seletores = self.dados_integracao["seletores"]
         perguntas_da_sessao = {}
         
         while True:
-            # Forçar o delay configurado para permitir auditoria visual ou Pausa
-            time.sleep(self.config.get("delay_passo", 0))
+            time.sleep(self.config.get("delay_passo", 2))
             
-            # Identificar Inputs de texto, Radio Buttons ou Selects na tela atual do Modal
-            # Varre os elementos visíveis para capturar perguntas
-            labels = page.query_selector_all(f"{seletores['modal_formulario']} label")
-            for label in labels:
-                texto_pergunta = label.inner_text().strip()
+            # Captura fields no modal
+            # No LinkedIn, campos costumam estar dentro de fieldsets ou divs com labels
+            form_elements = page.query_selector_all(f"{seletores['modal_formulario']} .jobs-easy-apply-form-section__grouping")
+
+            for element in form_elements:
+                label_elem = element.query_selector("label")
+                if not label_elem: continue
+
+                texto_pergunta = label_elem.inner_text().strip()
                 if not texto_pergunta: continue
                 
-                # Verifica se já conhecemos a pergunta
+                # Ignorar se já respondido nesta tela (prevenção de loop)
+                if texto_pergunta in perguntas_da_sessao: continue
+
                 chave_universal = self.respostas_db.get("perguntas_mapeadas", {}).get(texto_pergunta)
-                
+                resposta_final = None
+                acao_usuario = None
+
                 if chave_universal:
-                    resposta_final = self.respostas_db.get("valores_respostas", {}).get(chave_universal)
+                    resposta_atual = self.respostas_db.get("valores_respostas", {}).get(chave_universal)
+                    if self.config.get("confirmacao_manual"):
+                        res_humana = self.interface.confirmar_campo(texto_pergunta, resposta_atual, chave_universal)
+                        if res_humana["acao"] == "cancelar": raise Exception("Cancelado pelo usuário.")
+                        resposta_final, acao_usuario = res_humana["resposta"], res_humana["acao"]
+                    else:
+                        resposta_final = resposta_atual
                 else:
-                    # Pergunta inédita identificada -> Aciona Tkinter
-                    print(f"❓ Pergunta inédita: '{texto_pergunta}'")
                     res_humana = self.interface.perguntar_resposta_nova(texto_pergunta)
+                    if res_humana["acao"] == "cancelar": raise Exception("Cancelado pelo usuário.")
+                    resposta_final, acao_usuario, chave_universal = res_humana["resposta"], res_humana["acao"], res_humana["chave"]
+
+                if acao_usuario == "salvar_atualizar":
+                    self.respostas_db.setdefault("perguntas_mapeadas", {})[texto_pergunta] = chave_universal
+                    self.respostas_db.setdefault("valores_respostas", {})[chave_universal] = resposta_final
+                    self._salvar_json("respostas.json", self.respostas_db)
+
+                # Preenchimento
+                input_elem = element.query_selector("input, select, textarea")
+                if input_elem:
+                    tag = input_elem.evaluate("el => el.tagName")
+                    type_attr = input_elem.get_attribute("type")
                     
-                    if res_humana["acao"] == "cancelar":
-                        raise Exception("Execução cancelada pelo usuário na tela de perguntas.")
-                        
-                    resposta_final = res_humana["resposta"]
-                    
-                    if res_humana["acao"] == "salvar_atualizar":
-                        # Atualiza base de dados JSON persistentemente
-                        self.respostas_db.setdefault("perguntas_mapeadas", {})[texto_pergunta] = res_humana["chave"]
-                        self.respostas_db.setdefault("valores_respostas", {})[res_humana["chave"]] = resposta_final
-                        self._salvar_json("respostas.json", self.respostas_db)
-                
-                # Preencher o campo com base no elemento associado ao label
-                id_alvo = label.get_attribute("for")
-                if id_alvo:
-                    campo = page.query_selector(f"#{id_alvo}")
-                    if campo:
-                        tag_name = campo.evaluate("el => el.tagName")
-                        if tag_name == "INPUT":
-                            campo.fill(resposta_final)
-                        elif tag_name == "SELECT":
-                            campo.select_option(label=resposta_final)
+                    if tag == "SELECT":
+                        input_elem.select_option(label=resposta_final)
+                    elif type_attr == "radio":
+                        # Encontra o rádio que corresponde à resposta
+                        radios = element.query_selector_all("input[type='radio']")
+                        for r in radios:
+                            r_label = page.query_selector(f"label[for='{r.get_attribute('id')}']")
+                            if r_label and resposta_final.lower() in r_label.inner_text().lower():
+                                r.click()
+                                break
+                    elif type_attr == "checkbox":
+                        if "sim" in resposta_final.lower() or "yes" in resposta_final.lower() or "aceito" in resposta_final.lower():
+                            input_elem.check()
+                    else:
+                        input_elem.fill(resposta_final)
                 
                 perguntas_da_sessao[texto_pergunta] = resposta_final
 
-            # Lógica de Avanço de Etapas
+            # Navegação
             btn_avancar = page.query_selector(seletores["botao_avancar_modal"])
             btn_revisar = page.query_selector(seletores["botao_revisar_modal"])
             btn_enviar = page.query_selector(seletores["botao_enviar_vaga"])
@@ -136,207 +130,87 @@ class LinkedInAutomator:
             elif btn_revisar and btn_revisar.is_visible():
                 btn_revisar.click()
             elif btn_enviar and btn_enviar.is_visible():
-                # Tratamento de confirmação de anexo se houver área de upload visível
+                # Verificação de CV
                 if "currículo" in page.content().lower() or "cv" in page.content().lower():
-                    # Simula a checagem do documento padrão configurado
-                    checar_cv = self.interface.validar_anexo(self.config.get("caminho_cv_padrao", "cv.pdf"))
-                    if checar_cv["acao"] == "cancelar":
-                        raise Exception("Envio cancelado na verificação do currículo.")
+                    res_anexo = self.interface.validar_anexo(self.config.get("caminho_cv_padrao"))
+                    if res_anexo["acao"] == "cancelar": raise Exception("Envio cancelado no CV.")
                 
                 btn_enviar.click()
-                time.sleep(3) # Aguarda renderização da tela de sucesso
-                
-                # Confirmação Real de Conclusão por Seletor de Sucesso
+                time.sleep(3)
                 if page.query_selector(seletores["confirmacao_sucesso"]):
-                    print("🎉 Candidatura enviada com sucesso!")
                     self.registrar_log(vaga_info, "SUCESSO", perguntas_respondidas=perguntas_da_sessao)
-                    # Fechar modal de sucesso se aplicável
                     page.keyboard.press("Escape")
                     return True
-                else:
-                    raise Exception("Botão de enviar clicado, mas tela de confirmação não apareceu.")
+                raise Exception("Confirmação de sucesso não apareceu.")
             else:
-                raise Exception("Modal estagnado. Nenhum botão de avanço ou envio encontrado.")
+                raise Exception("Nenhum botão de ação encontrado no modal.")
 
     def aplicar_vaga(self, page, url_vaga):
-        """Processa uma vaga individual do início ao fim"""
         seletores = self.dados_integracao["seletores"]
-        vaga_info = {"link": url_vaga}
-        
+        vaga_info = {"link": url_vaga, "titulo": "N/A", "empresa": "N/A", "local": "N/A", "modalidade": "N/A", "postagem": "N/A", "candidatos": "N/A"}
         try:
-            print(f"🔗 Abrindo vaga: {url_vaga}")
             page.goto(url_vaga)
             page.wait_for_load_state("networkidle")
+            for chave in ["titulo_vaga", "empresa_vaga", "local_vaga", "modalidade_vaga", "data_postagem", "num_candidatos"]:
+                try:
+                    el = page.locator(seletores.get(chave)).first
+                    if el.is_visible(): vaga_info[chave.replace("_vaga", "").replace("num_", "").replace("data_", "")] = el.inner_text().strip()
+                except: pass
             
-            # Extração de Dados Ricos para Estatísticas
-            try:
-                vaga_info["titulo"] = page.locator(seletores["titulo_vaga"]).inner_text().strip()
-                vaga_info["empresa"] = page.locator(seletores["empresa_vaga"]).inner_text().strip()
-                vaga_info["local"] = page.locator(seletores["local_vaga"]).inner_text().strip()
-                vaga_info["modalidade"] = page.locator(seletores["modalidade_vaga"]).inner_text().strip()
-                vaga_info["postagem"] = page.locator(seletores["data_postagem"]).inner_text().strip()
-                vaga_info["candidatos"] = page.locator(seletores["num_candidatos"]).inner_text().strip()
-            except Exception:
-                # Fallback parcial se algum metadado falhar, para não travar a candidatura
-                pass
-
-            # Checa se possui o botão de Candidatura Simplificada
             btn_candidatura = page.query_selector(seletores["botao_candidatura_simples"])
             if not btn_candidatura:
-                print("⏭️ Vaga não possui Candidatura Simplificada. Pulando.")
-                self.registrar_log(vaga_info, "SKIP", "Não possui Candidatura Simplificada")
+                self.registrar_log(vaga_info, "SKIP", "Não é Candidatura Simplificada")
                 return False
                 
-            print("🚀 Iniciando Candidatura Simplificada...")
             btn_candidatura.click()
             page.wait_for_selector(seletores["modal_formulario"])
-            
-            # Entra no preenchimento dinâmico por etapas
             return self.responder_fluxo_formulario(page, vaga_info)
-            
         except Exception as e:
-            self.tratar_excecao(url_vaga, "Processando Formulário/Envio", e)
+            self.tratar_excecao(url_vaga, "Aplicação", e)
             self.registrar_log(vaga_info, "FALHA", str(e))
             return False
 
     def _garantir_login(self, page):
-        """Verifica a autenticação e tenta logar se necessário."""
-        print("🔒 Verificando estado da autenticação...")
-        
-        # 1. Verifique se já está logado (se existe a barra de pesquisa interna, por exemplo)
-        if "feed" in page.url:
-            print("✅ Usuário já autenticado.")
-            return
-
-        print("🔑 Sessão não encontrada. Iniciando login...")
-        
-        try:
-            # Força ir para a página de login dedicada (é mais estável que a Landing Page)
-            page.goto("https://www.linkedin.com/login", wait_until="networkidle")
-            
-            # ======================================================================
-            # MODO DE DEPURAÇÃO: Se o robô travar aqui, você consegue ver o que mudou
-            # ======================================================================
-            # Descomente a linha abaixo se quiser interagir manualmente para descobrir os seletores:
-            # page.pause() 
-            
-            # Preenchendo o E-mail (Tentando seletores comuns do LinkedIn)
-            # O LinkedIn costuma usar id="username" ou input[name="session_key"]
-            if page.is_visible("input#username"):
-                page.fill("input#username", "seu_email@gmail.com")
-            elif page.is_visible('input[name="session_key"]'):
-                page.fill('input[name="session_key"]', "seu_email@gmail.com")
-            else:
-                print("⚠️ Campo de e-mail não identificado com os seletores padrão.")
-                page.pause() # Para o robô aqui para você inspecionar!
-
-            # Preenchendo a Senha
-            if page.is_visible("input#password"):
-                page.fill("input#password", "sua_senha_secreta")
-            elif page.is_visible('input[name="session_password"]'):
-                page.fill('input[name="session_password"]', "sua_senha_secreta")
-
-            # Clicando no Botão de Entrar
-            # Geralmente é um botão do tipo submit ou com a classe btn__primary--large
-            botao_entrar = page.locator('button[type="submit"]')
-            if botao_entrar.is_visible():
-                botao_entrar.click()
-            else:
-                # Se não achar o botão, usa o Enter no campo de senha para submeter
-                page.press("input#password", "Enter")
-
-            # Espera o redirecionamento para o Feed (ou pede intervenção se aparecer Captcha)
-            page.wait_for_url("**/feed/**", timeout=15000)
-            print("🎉 Login efetuado com sucesso!")
-
-        except Exception as e:
-            print(f"\n❌ Erro durante o processo de login: {e}")
-            print("🛑 Entrando em modo de pausa para inspeção. Analise o navegador aberto!")
-            
-            # ISSO vai impedir o navegador de fechar na sua cara quando der o erro!
-            page.pause() 
-            
-            raise Exception("Falha no login: O robô não conseguiu acessar a página inicial após a tentativa de autenticação.")
-
-
-
+        page.goto("https://www.linkedin.com/feed/")
+        if "feed" in page.url: return
+        page.goto("https://www.linkedin.com/login")
+        email, senha = self.config.get("email"), self.config.get("senha")
+        if email and senha:
+            page.fill("input#username", email)
+            page.fill("input#password", senha)
+            page.click('button[type="submit"]')
+            try: page.wait_for_url("**/feed/**", timeout=10000)
+            except: page.pause()
+        else: page.pause()
 
     def executar_pesquisa(self, palavra_chave):
-        """Inicia a sessão do Playwright acoplada ao Chrome Browser para rodar a busca"""
-        print(f"🔍 Iniciando busca por '{palavra_chave}' no LinkedIn...")
-        
-        with open("log.log", "a", encoding="utf-8") as f:
-            f.write(f"\n[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Iniciando pesquisa pelo termo: '{palavra_chave}'\n")
-            
         user_data_dir = self.config.get("chrome_user_data_windows")
-        perfil_nome = self.config.get("chrome_perfil_nome", "Default")
-        
+        perfil = self.config.get("chrome_perfil_nome", "Default")
         with sync_playwright() as p:
-            print("🌐 Abrindo o Google Chrome...")
-            context = p.chromium.launch_persistent_context(
-                user_data_dir,
-                headless=False,
-                channel="chrome", 
-                args=[
-                    f"--profile-directory={perfil_nome}",
-                    "--disable-extensions",
-                    "--start-maximized"
-                ]
-            )
-            
-            if context.pages:
-                page = context.pages[0]
-            else:
-                page = context.new_page()
-                
-            # EXECUTA A CAMADA INTELIGENTE DE LOGIN ANTES DE IR PARA A BUSCA
+            context = p.chromium.launch_persistent_context(user_data_dir, headless=False, channel="chrome", args=[f"--profile-directory={perfil}", "--start-maximized"])
+            page = context.pages[0] if context.pages else context.new_page()
             self._garantir_login(page)
-                
-            url_busca = self.dados_integracao["url_busca"].format(keyword=palavra_chave)
-            print(f"✈️ Navegando para a busca do LinkedIn...")
-            page.goto(url_busca)
-            page.wait_for_load_state("domcontentloaded")
-            time.sleep(4)
+            page.goto(self.dados_integracao["url_busca"].format(keyword=palavra_chave))
+            page.wait_for_load_state("networkidle")
             
-            # --- Scroll na lista lateral ---
             seletor_lista = ".scaffold-layout__list"
             if page.query_selector(seletor_lista):
-                print("📜 Rolando a lista de vagas para carregar dados do LinkedIn...")
                 for _ in range(3):
-                    page.eval_on_selector(seletor_lista, "el => el.scrollTop += 600")
+                    page.eval_on_selector(seletor_lista, "el => el.scrollTop += 800")
                     time.sleep(1)
-            # --------------------------------------------------------
             
-            vagas_processadas = 0
-            limite_vagas = self.config.get("vagas_por_termo", -1)
-            
-            # Varredura das vagas da barra lateral esquerda
-            lista_itens = page.query_selector_all(self.dados_integracao["seletores"]["lista_vagas"])
-            urls_vagas_pagina = []
-            
-            for item in lista_itens:
+            vagas_processadas, limite = 0, self.config.get("vagas_por_termo", -1)
+            urls = []
+            for item in page.query_selector_all(self.dados_integracao["seletores"]["lista_vagas"]):
                 link_elem = item.query_selector(self.dados_integracao["seletores"]["card_vaga_link"])
                 if link_elem:
                     href = link_elem.get_attribute("href")
-                    url_limpa = href.split("?")[0] if href else ""
-                    if url_limpa and url_limpa not in urls_vagas_pagina:
-                        urls_vagas_pagina.append(url_limpa)
+                    if href:
+                        url = href.split("?")[0]
+                        if "jobs/view" in url and url not in urls: urls.append(url)
 
-            print(f"📦 Encontradas {len(urls_vagas_pagina)} vagas nesta página.")
-            
-            with open("log.log", "a", encoding="utf-8") as f:
-                f.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Encontradas {len(urls_vagas_pagina)} vagas para o termo '{palavra_chave}'.\n")
-
-            for url in urls_vagas_pagina:
-                if limite_vagas != -1 and vagas_processadas >= limite_vagas:
-                    print("🛑 Limite de vagas atingido para esta palavra-chave.")
-                    break
-                
-                sucesso = self.aplicar_vaga(page, url)
-                if sucesso:
-                    vagas_processadas += 1
-                
+            for url in urls:
+                if limite != -1 and vagas_processadas >= limite: break
+                if self.aplicar_vaga(page, url): vagas_processadas += 1
                 time.sleep(2)
-
             context.close()
-            print(f"🏁 Concluída pesquisa do termo '{palavra_chave}' no LinkedIn.")
