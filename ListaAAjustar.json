@@ -1,0 +1,8 @@
+[
+    {
+        "url": "https://www.linkedin.com/jobs/search/?keywords=Python&start=0",
+        "passo_falha": "Carregar Pesquisa",
+        "erro": "Timeout excedido após tentativas",
+        "timestamp": "2026-05-21 13:59:25"
+    }
+]

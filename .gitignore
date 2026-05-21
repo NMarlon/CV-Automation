@@ -12,3 +12,6 @@ __pycache__/configuracoes.cpython-314.pyc
 ScriptsParaCadaDomínio/__pycache__/linkedin.cpython-314.pyc
 .gitignore
 __pycache__/interface_humana.cpython-314.pyc
+
+**/__pycache__/
+*.pyc
