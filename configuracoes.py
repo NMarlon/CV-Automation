@@ -5,8 +5,12 @@ CONFIG = {
     "vagas_por_termo": 4,
     
     # Palavras-chave para pesquisar sequencialmente
-    "palavras_chave": ["Python", "Desenvolvedor FullStack", "Cientista de Dados"],
+    "palavras_chave": ["Python", "Desenvolvedor FullStack", "Cientista de Dados", "Automação de Processo"],
     
+    # Se contém qualquer dessas palavras-chave no título da vaga, ele vai prosseguir nessa vaga para candidatura:
+    "titulos_aprovados":["Python", "Desenvolvedor", "Data", "FullStack", "Backend", "Frontend", "Dados","Ciência","Júnior","Trainee", "API", "Automação"],
+    "titulos_desaprovados": ["Estágio", "Sênior", "Gerente", "Motorista", "Faturista", "Assistente","Analista de RH", "Vendedor", "Vendas", "Comercial", "Marketing", "Designer", "UX", "UI", "Suporte", "Help Desk", "Administrativo", "Técnico de Enfermagem"],
+
     # Controle de Loop (0 = sem loop; -1 = infinito; 3 = faz o loop 3 vezes por toda a lista)
     "loops_sistema": 0,
     
