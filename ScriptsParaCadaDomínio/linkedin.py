@@ -4,11 +4,16 @@ import time
 import csv
 from datetime import datetime
 from playwright.sync_api import sync_playwright
+from dotenv import load_dotenv
 from interface_humana import InterfaceHumana
 
 class LinkedInAutomator:
     def __init__(self, config_global):
         self.config = config_global
+        # Carrega as variáveis do arquivo .env
+        load_dotenv()
+        self.username = os.getenv("LINKEDIN_EMAIL")
+        self.password = os.getenv("LINKEDIN_PASSWORD")
         self.interface = InterfaceHumana()
         self.dados_integracao = self._carregar_json("integracao.json")["linkedin.com"]
         self.respostas_db = self._carregar_json("respostas.json")
