@@ -1,12 +1,16 @@
 import os
 
 CONFIG = {
-    # Quantas vagas enviar por domínio por palavra-chave? (-1 = até o fim; 1 = uma vaga, etc.)
+    # Quantas candidaturas ENVIADAS por domínio por palavra-chave? (-1 = até o fim; 1 = uma vaga, etc.)
     "vagas_por_termo": 4,
     
     # Palavras-chave para pesquisar sequencialmente
     "palavras_chave": ["Python", "Desenvolvedor FullStack", "Cientista de Dados"],
     
+    # Filtros de Título
+    "titulos_aprovados": ["Python", "Desenvolvedor", "Data", "FullStack", "Backend", "Frontend", "Dados", "Ciência", "Júnior", "Trainee"],
+    "titulos_desaprovados": ["Estágio", "Sênior", "Gerente", "Motorista", "Faturista", "Assistente", "Analista de RH", "Vendedor", "Vendas", "Comercial", "Marketing", "Designer", "UX", "UI", "Suporte", "Help Desk", "Administrativo", "Técnico de Enfermagem"],
+
     # Controle de Loop (0 = sem loop; -1 = infinito; 3 = faz o loop 3 vezes por toda a lista)
     "loops_sistema": 0,
     
@@ -23,7 +27,7 @@ CONFIG = {
     "chrome_user_data_windows": os.path.abspath("PerfilAutomaçãoChrome"),
     "chrome_perfil_nome": "Default",
 
-    # E-mail e Senha para login automático (Opcional se usar perfil persistente logado)
+    # E-mail e Senha para login automático
     "email": "seu_email@gmail.com",
     "senha": "sua_senha_secreta"
 }
