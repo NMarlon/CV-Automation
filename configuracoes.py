@@ -11,6 +11,11 @@ CONFIG = {
     "titulos_aprovados": ["Python", "Desenvolvedor", "Data", "FullStack", "Backend", "Frontend", "Dados", "Ciência", "Júnior", "Trainee","Web", "HTML", "Automação", "Wordpress", "MySQL","API"],
     "titulos_desaprovados": ["Estágio", "Sênior", "Gerente", "Motorista", "Faturista", "Assistente", "Analista de RH", "Vendedor", "Vendas", "Comercial", "Marketing", "Designer", "UX", "UI", "Suporte", "Help Desk", "Administrativo", "Técnico de Enfermagem"],
 
+    # Configurações de Resiliência
+    "tentativas_por_vaga": 4,
+    "intervalo_tentativa": 20, # segundos
+    "pausa_em_erro": True, # Pausa a rotina para intervenção manual em caso de erro crítico
+
     # Controle de Loop (0 = sem loop; -1 = infinito; 3 = faz o loop 3 vezes por toda a lista)
     "loops_sistema": 0,
     
