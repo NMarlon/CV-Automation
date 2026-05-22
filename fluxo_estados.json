@@ -1,0 +1,26 @@
+{
+  "linkedin.com": {
+    "ESTADOS": {
+      "LOGIN": {
+        "url_contem": "/login",
+        "seletor_chave": "input#username"
+      },
+      "FEED": {
+        "url_contem": "/feed",
+        "seletor_chave": ".global-nav__primary-link"
+      },
+      "BUSCA_VAGAS": {
+        "url_contem": "/jobs/search",
+        "seletor_chave": ".jobs-search-results-list"
+      },
+      "DETALHE_VAGA": {
+        "url_contem": "/jobs/view",
+        "seletor_chave": ".job-details-jobs-unified-top-card"
+      },
+      "MODAL_CANDIDATURA": {
+        "url_contem": "",
+        "seletor_chave": ".jobs-easy-apply-modal"
+      }
+    }
+  }
+}

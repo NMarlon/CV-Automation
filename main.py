@@ -58,6 +58,7 @@ class OrquestradorAutomacao:
     def rodar_ciclo_dominios(self):
         """Executa a busca cíclica baseada nos domínios ativos e palavras-chave"""
         dominios_ativos = self._carregar_json(self.dominios_ativos_path)
+        progresso = self._carregar_json("progresso.json")
         if not dominios_ativos:
             print("⚠️ Nenhum domínio está ativo em 'ListaDeDomíniosAtivos.json'.")
             return
@@ -69,7 +70,17 @@ class OrquestradorAutomacao:
                 from ScriptsParaCadaDomínio.linkedin import LinkedInAutomator
                 automator = LinkedInAutomator(self.config)
                 
-                for termo in self.config["palavras_chave"]:
+                palavras_chave = self.config["palavras_chave"]
+
+                # Se houver progresso salvo, tenta retomar
+                if progresso and "termo" in progresso:
+                    termo_salvo = progresso["termo"]
+                    if termo_salvo in palavras_chave:
+                        indice = palavras_chave.index(termo_salvo)
+                        palavras_chave = palavras_chave[indice:]
+                        print(f"⏩ Retomando a partir do termo: {termo_salvo}")
+
+                for termo in palavras_chave:
                     print(f"\n🔄 [MUDANÇA DE TERMO] Iniciando pesquisa pela palavra-chave: '{termo}'")
                     
                     try:

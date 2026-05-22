@@ -17,6 +17,7 @@ class LinkedInAutomator:
         self.interface = InterfaceHumana()
         self.dados_integracao = self._carregar_json("integracao.json")["linkedin.com"]
         self.respostas_db = self._carregar_json("respostas.json")
+        self.fluxo_estados = self._carregar_json("fluxo_estados.json").get("linkedin.com", {})
         
         # GARANTE A CRIAÇÃO DOS ARQUIVOS DE LOG LOGO NO INÍCIO
         self._inicializar_arquivos_log()
@@ -164,6 +165,29 @@ class LinkedInAutomator:
             else:
                 raise Exception("Modal estagnado. Nenhum botão de avanço ou envio encontrado.")
 
+    def detectar_estado_atual(self, page):
+        """Identifica em qual estágio da navegação a página se encontra"""
+        url_atual = page.url
+        print(f"🕵️ Detectando estado atual... (URL: {url_atual})")
+
+        estados = self.fluxo_estados.get("ESTADOS", {})
+
+        # Ordem de prioridade na detecção
+        for nome_estado, config in estados.items():
+            # Se houver seletor chave e ele estiver visível, esse é o estado
+            if config.get("seletor_chave"):
+                try:
+                    if page.is_visible(config["seletor_chave"], timeout=2000):
+                        return nome_estado
+                except:
+                    pass
+
+            # Se a URL contém o padrão definido
+            if config.get("url_contem") and config["url_contem"] in url_atual:
+                return nome_estado
+
+        return "DESCONHECIDO"
+
     def aplicar_vaga(self, page, url_vaga):
         """Processa uma vaga individual do início ao fim"""
         seletores = self.dados_integracao["seletores"]
@@ -209,63 +233,80 @@ class LinkedInAutomator:
         """Verifica a autenticação e tenta logar se necessário."""
         print("🔒 Verificando estado da autenticação...")
         
-        # 1. Verifique se já está logado (se existe a barra de pesquisa interna, por exemplo)
-        if "feed" in page.url:
-            print("✅ Usuário já autenticado.")
+        estado = self.detectar_estado_atual(page)
+
+        if estado in ["FEED", "BUSCA_VAGAS", "DETALHE_VAGA", "MODAL_CANDIDATURA"]:
+            print(f"✅ Usuário já autenticado (Estado: {estado}).")
             return
 
-        print("🔑 Sessão não encontrada. Iniciando login...")
+        print("🔑 Sessão não encontrada ou em tela de login. Iniciando login...")
         
         try:
-            # Força ir para a página de login dedicada (é mais estável que a Landing Page)
-            page.goto("https://www.linkedin.com/login", wait_until="networkidle")
+            if estado != "LOGIN":
+                # Força ir para a página de login dedicada (é mais estável que a Landing Page)
+                page.goto("https://www.linkedin.com/login", wait_until="networkidle")
             
-            # ======================================================================
-            # MODO DE DEPURAÇÃO: Se o robô travar aqui, você consegue ver o que mudou
-            # ======================================================================
-            # Descomente a linha abaixo se quiser interagir manualmente para descobrir os seletores:
-            # page.pause() 
-            
-            # Preenchendo o E-mail (Tentando seletores comuns do LinkedIn)
-            # O LinkedIn costuma usar id="username" ou input[name="session_key"]
+            # Re-detectar se caiu no login mesmo
+            if not page.is_visible("input#username", timeout=5000):
+                estado_pos_goto = self.detectar_estado_atual(page)
+                if estado_pos_goto in ["FEED", "BUSCA_VAGAS", "DETALHE_VAGA"]:
+                    print("✅ Já estava logado após o redirecionamento.")
+                    return
+
+            # Preenchendo o E-mail
             if page.is_visible("input#username"):
-                page.fill("input#username", "seu_email@gmail.com")
+                page.fill("input#username", self.username or "seu_email@gmail.com")
             elif page.is_visible('input[name="session_key"]'):
-                page.fill('input[name="session_key"]', "seu_email@gmail.com")
+                page.fill('input[name="session_key"]', self.username or "seu_email@gmail.com")
             else:
-                print("⚠️ Campo de e-mail não identificado com os seletores padrão.")
-                page.pause() # Para o robô aqui para você inspecionar!
+                print("⚠️ Campo de e-mail não identificado. Verifique se já está logado ou se a página mudou.")
+                # Se não viu o e-mail, pode ser que já logou por cookie/perfil persistente
+                if self.detectar_estado_atual(page) != "LOGIN":
+                    return
 
             # Preenchendo a Senha
             if page.is_visible("input#password"):
-                page.fill("input#password", "sua_senha_secreta")
+                page.fill("input#password", self.password or "sua_senha_secreta")
             elif page.is_visible('input[name="session_password"]'):
-                page.fill('input[name="session_password"]', "sua_senha_secreta")
+                page.fill('input[name="session_password"]', self.password or "sua_senha_secreta")
 
             # Clicando no Botão de Entrar
-            # Geralmente é um botão do tipo submit ou com a classe btn__primary--large
             botao_entrar = page.locator('button[type="submit"]')
             if botao_entrar.is_visible():
                 botao_entrar.click()
             else:
-                # Se não achar o botão, usa o Enter no campo de senha para submeter
                 page.press("input#password", "Enter")
 
             # Espera o redirecionamento para o Feed (ou pede intervenção se aparecer Captcha)
-            page.wait_for_url("**/feed/**", timeout=15000)
-            print("🎉 Login efetuado com sucesso!")
+            try:
+                page.wait_for_url("**/feed/**", timeout=15000)
+                print("🎉 Login efetuado com sucesso!")
+            except:
+                # Se der timeout no feed, pode ser que redirecionou para outra página válida
+                if self.detectar_estado_atual(page) != "LOGIN":
+                    print("🎉 Login parece ter tido sucesso (não está mais na tela de login).")
+                else:
+                    raise Exception("Ainda na tela de login após tentativa.")
 
         except Exception as e:
             print(f"\n❌ Erro durante o processo de login: {e}")
-            print("🛑 Entrando em modo de pausa para inspeção. Analise o navegador aberto!")
-            
-            # ISSO vai impedir o navegador de fechar na sua cara quando der o erro!
-            page.pause() 
+            if self.config.get("pausa_em_erro"):
+                print("🛑 Entrando em modo de pausa para inspeção. Analise o navegador aberto!")
+                page.pause()
             
             raise Exception("Falha no login: O robô não conseguiu acessar a página inicial após a tentativa de autenticação.")
 
 
 
+
+    def registrar_progresso(self, termo, url_vaga=None):
+        """Salva o progresso atual para retomada em caso de falha"""
+        progresso = {
+            "termo": termo,
+            "url_vaga": url_vaga,
+            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+        self._salvar_json("progresso.json", progresso)
 
     def executar_pesquisa(self, palavra_chave):
         """Inicia a sessão do Playwright acoplada ao Chrome Browser para rodar a busca"""
@@ -319,6 +360,9 @@ class LinkedInAutomator:
             # Varredura das vagas da barra lateral esquerda
             lista_itens = page.query_selector_all(self.dados_integracao["seletores"]["lista_vagas"])
             vagas_extraidas = []
+
+            progresso = self._carregar_json("progresso.json")
+            url_retomada = progresso.get("url_vaga") if progresso else None
             
             for item in lista_itens:
                 link_elem = item.query_selector(self.dados_integracao["seletores"]["card_vaga_link"])
@@ -344,6 +388,14 @@ class LinkedInAutomator:
                 with open("log.log", "a", encoding="utf-8") as f:
                     f.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Encontradas {len(vagas_extraidas)} vagas para o termo '{palavra_chave}'.\n")
 
+            if url_retomada:
+                # Filtra a lista para começar após a última vaga tentada
+                urls = [v["url"] for v in vagas_extraidas]
+                if url_retomada in urls:
+                    indice = urls.index(url_retomada)
+                    print(f"⏩ Retomando lista de vagas a partir de: {url_retomada}")
+                    vagas_extraidas = vagas_extraidas[indice:]
+
             for vaga in vagas_extraidas:
                 if limite_vagas != -1 and vagas_processadas >= limite_vagas:
                     print("🛑 Limite de vagas atingido para esta palavra-chave.")
@@ -352,9 +404,19 @@ class LinkedInAutomator:
                 url = vaga["url"]
                 titulo = vaga["titulo"]
 
+                self.registrar_progresso(palavra_chave, url)
+
                 # --- Lógica de Filtro de Título ---
-                aprovado = any(keyword.lower() in titulo.lower() for keyword in self.config.get("titulos_aprovados", []))
-                desaprovado = any(keyword.lower() in titulo.lower() for keyword in self.config.get("titulos_desaprovados", []))
+                titulos_aprovados = self.config.get("titulos_aprovados", [])
+                titulos_desaprovados = self.config.get("titulos_desaprovados", [])
+
+                aprovado = True
+                if titulos_aprovados:
+                    aprovado = any(keyword.lower() in titulo.lower() for keyword in titulos_aprovados)
+
+                desaprovado = False
+                if titulos_desaprovados:
+                    desaprovado = any(keyword.lower() in titulo.lower() for keyword in titulos_desaprovados)
 
                 if not aprovado or desaprovado:
                     print(f"⏩ Pulando vaga por filtro de título: {titulo}")
@@ -366,6 +428,10 @@ class LinkedInAutomator:
                     vagas_processadas += 1
                 
                 time.sleep(2)
+
+            # Limpa progresso ao finalizar termo
+            if os.path.exists("progresso.json"):
+                os.remove("progresso.json")
 
             context.close()
             print(f"🏁 Concluída pesquisa do termo '{palavra_chave}' no LinkedIn.")
