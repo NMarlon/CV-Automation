@@ -172,18 +172,22 @@ class LinkedInAutomator:
 
         estados = self.fluxo_estados.get("ESTADOS", {})
 
-        # Ordem de prioridade na detecção
+        # 1. Checagem por SELETOR (mais confiável)
         for nome_estado, config in estados.items():
-            # Se houver seletor chave e ele estiver visível, esse é o estado
             if config.get("seletor_chave"):
-                try:
-                    if page.is_visible(config["seletor_chave"], timeout=2000):
-                        return nome_estado
-                except:
-                    pass
+                seletores = [s.strip() for s in config["seletor_chave"].split(",")]
+                for seletor in seletores:
+                    try:
+                        if page.is_visible(seletor, timeout=1000):
+                            print(f"✅ Estado detectado por seletor: {nome_estado} ({seletor})")
+                            return nome_estado
+                    except:
+                        continue
 
-            # Se a URL contém o padrão definido
+        # 2. Checagem por URL (fallback)
+        for nome_estado, config in estados.items():
             if config.get("url_contem") and config["url_contem"] in url_atual:
+                print(f"✅ Estado detectado por URL: {nome_estado}")
                 return nome_estado
 
         return "DESCONHECIDO"
@@ -195,8 +199,7 @@ class LinkedInAutomator:
         
         try:
             print(f"🔗 Abrindo vaga: {url_vaga}")
-            page.goto(url_vaga)
-            page.wait_for_load_state("networkidle")
+            page.goto(url_vaga, wait_until="domcontentloaded", timeout=60000)
             
             # Extração de Dados Ricos para Estatísticas
             try:
@@ -235,7 +238,7 @@ class LinkedInAutomator:
         
         estado = self.detectar_estado_atual(page)
 
-        if estado in ["FEED", "BUSCA_VAGAS", "DETALHE_VAGA", "MODAL_CANDIDATURA"]:
+        if estado in ["HOME_LOGADO", "BUSCA_VAGAS", "DETALHE_VAGA", "MODAL_CANDIDATURA"]:
             print(f"✅ Usuário já autenticado (Estado: {estado}).")
             return
 
@@ -244,13 +247,20 @@ class LinkedInAutomator:
         try:
             if estado != "LOGIN":
                 # Força ir para a página de login dedicada (é mais estável que a Landing Page)
-                page.goto("https://www.linkedin.com/login", wait_until="networkidle")
+                print("✈️ Navegando para a página de login...")
+                page.goto("https://www.linkedin.com/login", wait_until="domcontentloaded", timeout=60000)
             
-            # Re-detectar se caiu no login mesmo
+            # Re-detectar se caiu no login mesmo (as vezes o goto redireciona pra home se ja logado)
+            time.sleep(2)
+            estado_pos_goto = self.detectar_estado_atual(page)
+            if estado_pos_goto in ["HOME_LOGADO", "BUSCA_VAGAS", "DETALHE_VAGA"]:
+                print("✅ Já estava logado após o redirecionamento.")
+                return
+
             if not page.is_visible("input#username", timeout=5000):
-                estado_pos_goto = self.detectar_estado_atual(page)
-                if estado_pos_goto in ["FEED", "BUSCA_VAGAS", "DETALHE_VAGA"]:
-                    print("✅ Já estava logado após o redirecionamento.")
+                print("⚠️ Campo de e-mail não apareceu. Tentando detectar estado novamente...")
+                estado_final = self.detectar_estado_atual(page)
+                if estado_final in ["HOME_LOGADO", "BUSCA_VAGAS", "DETALHE_VAGA"]:
                     return
 
             # Preenchendo o E-mail
@@ -279,7 +289,7 @@ class LinkedInAutomator:
 
             # Espera o redirecionamento para o Feed (ou pede intervenção se aparecer Captcha)
             try:
-                page.wait_for_url("**/feed/**", timeout=15000)
+                page.wait_for_url("**/feed/**", timeout=15000, wait_until="domcontentloaded")
                 print("🎉 Login efetuado com sucesso!")
             except:
                 # Se der timeout no feed, pode ser que redirecionou para outra página válida
@@ -341,8 +351,7 @@ class LinkedInAutomator:
                 
             url_busca = self.dados_integracao["url_busca"].format(keyword=palavra_chave)
             print(f"✈️ Navegando para a busca do LinkedIn...")
-            page.goto(url_busca)
-            page.wait_for_load_state("domcontentloaded")
+            page.goto(url_busca, wait_until="domcontentloaded", timeout=60000)
             time.sleep(4)
             
             # --- Scroll na lista lateral ---

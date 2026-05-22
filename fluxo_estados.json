@@ -5,9 +5,9 @@
         "url_contem": "/login",
         "seletor_chave": "input#username"
       },
-      "FEED": {
+      "HOME_LOGADO": {
         "url_contem": "/feed",
-        "seletor_chave": ".global-nav__primary-link"
+        "seletor_chave": ".share-box-feed-entry__trigger, .global-nav__primary-link, .identity-reveal-trigger"
       },
       "BUSCA_VAGAS": {
         "url_contem": "/jobs/search",
