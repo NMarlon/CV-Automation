@@ -18,7 +18,15 @@ CONFIG = {
     "caminho_cv_padrao": os.path.abspath("CV-Data/CVs/CV - Marlon - DevFullStack.pdf"),
     
     "chrome_user_data_windows": os.path.abspath("PerfilAutomaçãoChrome"),
-    "chrome_perfil_nome": "Default"
+    "chrome_perfil_nome": "Default",
+
+    # Filtros de Títulos de Vagas
+    "titulos_aprovados": ["Python", "FullStack", "Cientista de Dados", "Testes", "QA", "Dados"],
+    "titulos_desaprovados": ["Sênior", "Senior", "Sr", "Lead", "Gerente", "Diretor"],
+
+    # Configurações de Comportamento
+    "pausa_em_erro": True,
+    "confirmacao_manual": False,
 
     # Caminho do Perfil do Arc Browser no Windows (Modificado para sua máquina)
     # "arc_user_data_windows": os.path.expandvars(r"%LocalAppData%\Arc\User Data")
